@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #080808;
+    color: #f5f0e8;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Subtle noise texture */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #080808; }
+  ::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #e8c97a; }
+
+  ::selection {
+    background: #c9a84c40;
+    color: #e8c97a;
+  }
+}
+
+@layer components {
+  /* ── Gold gradient text ── */
+  .gold-text {
+    background: linear-gradient(135deg, #c9a84c 0%, #f0d882 45%, #c9a84c 75%, #a07c2d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Section header gold divider ── */
+  .gold-divider {
+    @apply w-16 h-px mx-auto;
+    background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+  }
+
+  /* ── Luxury card with glow on hover ── */
+  .luxury-card {
+    @apply bg-dark-card border border-dark-border transition-all duration-500;
+    position: relative;
+  }
+  .luxury-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, #c9a84c22, transparent 50%, #c9a84c11);
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .luxury-card:hover::before {
+    opacity: 1;
+  }
+  .luxury-card:hover {
+    border-color: rgba(201, 168, 76, 0.4);
+    box-shadow: 0 8px 40px rgba(201, 168, 76, 0.08), 0 0 0 1px rgba(201, 168, 76, 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* ── Gold glow button effect ── */
+  .btn-gold-glow {
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: box-shadow 0.3s, transform 0.2s;
+  }
+  .btn-gold-glow:hover {
+    box-shadow: 0 0 35px rgba(201, 168, 76, 0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+
+  /* ── Radiant section background ── */
+  .radiant-bg {
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%),
+                #0d0d0d;
+  }
+
+  /* ── Section padding ── */
+  .section-pad {
+    @apply px-4 sm:px-6 lg:px-12 xl:px-20;
+  }
+
+  /* ── Eyebrow label ── */
+  .eyebrow {
+    @apply text-xs tracking-[0.45em] uppercase font-medium;
+    color: #c9a84c;
+    letter-spacing: 0.42em;
+  }
+
+  /* ── Image overlay gradient ── */
+  .img-overlay {
+    background: linear-gradient(to top, #080808 0%, rgba(8,8,8,0.5) 40%, rgba(8,8,8,0.1) 100%);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Gold border gradient */
+  .border-gold-gradient {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+  }
+}
