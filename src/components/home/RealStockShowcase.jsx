@@ -4,6 +4,7 @@ import { Sparkles, ShoppingBag, Eye, ShieldCheck, Star } from 'lucide-react'
 import { useCartStore } from '../../store/cartStore'
 import { getProductById } from '../../data/products'
 import { formatPrice } from '../../utils/helpers'
+import MotionSection from '../common/MotionSection'
 import toast from 'react-hot-toast'
 
 const realStocks = [
@@ -57,17 +58,18 @@ export default function RealStockShowcase() {
   }
 
   return (
-    <section className="section-pad py-24 relative bg-[#030305] overflow-hidden">
+    <section className="section-pad py-20 sm:py-24 relative bg-[#030305] overflow-hidden">
       {/* Background glow lines */}
       <div className="absolute inset-0 bg-cyber-grid opacity-50 pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      {/* ── Single-Play Viewport Drift-Up Reveal (25px, 500ms) ── */}
+      <MotionSection className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16">
         <div>
           <div className="cyber-badge mb-3">
             <ShieldCheck className="w-3.5 h-3.5 text-gold-bright" />
             <span>AUTHENTIC PHYSICAL INVENTORY</span>
           </div>
-          <h2 className="font-syne text-4xl sm:text-5xl lg:text-6xl font-black text-white">
+          <h2 className="font-syne text-3xl sm:text-5xl lg:text-6xl font-black text-white">
             Live Stock <span className="text-liquid-gold">Spotlight</span>
           </h2>
           <p className="font-cinzel text-gold-light italic text-base sm:text-lg mt-1">
@@ -82,26 +84,22 @@ export default function RealStockShowcase() {
           <span>View All Stock Photos</span>
           <Eye className="w-4 h-4 text-gold-bright" />
         </Link>
-      </div>
+      </MotionSection>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-        {realStocks.map((item, idx) => (
-          <motion.div
+      {/* Grid of Stock Flacons */}
+      <MotionSection delay={0.15} className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-10">
+        {realStocks.map((item) => (
+          <div
             key={item.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: idx * 0.15 }}
-            whileHover={{ y: -8 }}
-            className="glass-panel rounded-3xl p-5 sm:p-6 border border-gold/30 hover:border-gold shadow-2xl flex flex-col justify-between group transition-all duration-400"
+            className="glass-panel rounded-3xl p-4 sm:p-6 border border-gold/30 hover:border-gold shadow-2xl flex flex-col justify-between group transition-all duration-300"
           >
             <div>
-              {/* Image Container with Hologram Stamp */}
-              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-5 bg-[#050508] border border-white/10">
+              {/* Image Container */}
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4 sm:mb-5 bg-[#050508] border border-white/10">
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-400"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
 
@@ -119,7 +117,7 @@ export default function RealStockShowcase() {
               </div>
 
               {/* Title and description */}
-              <h3 className="font-syne text-xl font-extrabold text-white group-hover:text-gold-bright transition-colors mb-2">
+              <h3 className="font-syne text-lg sm:text-xl font-extrabold text-white group-hover:text-gold-bright transition-colors mb-2">
                 {item.title}
               </h3>
               <p className="text-xs text-cream-muted leading-relaxed mb-6 font-light line-clamp-2">
@@ -131,7 +129,7 @@ export default function RealStockShowcase() {
             <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
               <div>
                 <span className="text-[10px] text-cream-muted font-space uppercase block">Direct Stock</span>
-                <span className="font-syne text-xl font-bold text-gold-bright">
+                <span className="font-syne text-lg sm:text-xl font-bold text-gold-bright">
                   {formatPrice(item.price)}
                 </span>
               </div>
@@ -139,23 +137,23 @@ export default function RealStockShowcase() {
               <div className="flex items-center gap-2">
                 <Link
                   to={`/product/${item.slug}`}
-                  className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-cream-soft hover:text-white border border-white/10 transition-colors"
+                  className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-cream-soft hover:text-white border border-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                   title="View Details"
                 >
                   <Eye className="w-4 h-4" />
                 </Link>
                 <button
                   onClick={() => handleAddToCart(item)}
-                  className="btn-futuristic px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2"
+                  className="btn-futuristic px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2 min-h-[44px]"
                 >
                   <ShoppingBag className="w-3.5 h-3.5" />
                   <span>Vault</span>
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
-      </div>
+      </MotionSection>
     </section>
   )
 }

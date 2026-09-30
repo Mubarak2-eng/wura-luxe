@@ -5,8 +5,8 @@ import FeaturedCollections from '../components/home/FeaturedCollections'
 import BestSellers from '../components/home/BestSellers'
 import OurStory from '../components/home/OurStory'
 import Newsletter from '../components/home/Newsletter'
-import { motion } from 'framer-motion'
-import { Star, ShieldCheck, Sparkles, Truck, Award, Zap } from 'lucide-react'
+import MotionSection from '../components/common/MotionSection'
+import { Star, ShieldCheck, Truck, Award, Zap } from 'lucide-react'
 
 const testimonials = [
   {
@@ -38,13 +38,13 @@ const testimonials = [
 export default function HomePage() {
   return (
     <div className="relative">
-      {/* 1. Hero with Real Stock Spotlight & Motto */}
+      {/* 1. Hero with 1.03x to 1.0x background ease & 15px staggered drift */}
       <HeroBanner />
 
-      {/* 2. Real Physical Inventory Spotlight */}
+      {/* 2. Real Physical Inventory Spotlight with single-play scroll reveal */}
       <RealStockShowcase />
 
-      {/* 3. Futuristic Interactive Scent Layering Lab */}
+      {/* 3. Futuristic Multi-Step Scent Layering Finder (0.98x exit / 1.02x enter cross-fade) */}
       <InteractiveScentLab />
 
       {/* 4. Vault Collections */}
@@ -56,27 +56,26 @@ export default function HomePage() {
       {/* 6. Brand Ethos & Heritage */}
       <OurStory />
 
-      {/* 7. Real Client Verified Reviews */}
-      <section className="section-pad py-24 relative overflow-hidden bg-[#040407]">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+      {/* 7. Real Client Verified Reviews (Single-play reveal) */}
+      <section className="section-pad py-20 sm:py-24 relative overflow-hidden bg-[#040407]">
+        <MotionSection className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
           <div className="cyber-badge mb-3">
             <Star className="w-3.5 h-3.5 fill-gold-bright text-gold-bright" />
             <span>AUTHENTIC CLIENT EXPERIENCES</span>
           </div>
-          <h2 className="font-syne text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3">
+          <h2 className="font-syne text-3xl sm:text-5xl lg:text-6xl font-black text-white mb-2 sm:mb-3">
             Tested &amp; <span className="text-liquid-gold">Obsessed</span>
           </h2>
           <p className="font-cinzel text-gold-light italic text-base sm:text-lg">
             "Smell as good as you look!"
           </p>
-        </div>
+        </MotionSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <MotionSection delay={0.15} className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t, idx) => (
-            <motion.div
+            <div
               key={idx}
-              whileHover={{ y: -6 }}
-              className="glass-panel p-7 sm:p-8 rounded-3xl border border-gold/20 hover:border-gold/50 transition-all duration-300 flex flex-col justify-between"
+              className="glass-panel p-6 sm:p-8 rounded-3xl border border-gold/20 hover:border-gold/50 transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -90,7 +89,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <p className="text-sm text-cream-soft leading-relaxed mb-6 font-light italic">
+                <p className="text-xs sm:text-sm text-cream-soft leading-relaxed mb-6 font-light italic">
                   {t.text}
                 </p>
               </div>
@@ -99,62 +98,62 @@ export default function HomePage() {
                 <img
                   src={t.img}
                   alt={t.name}
-                  className="w-11 h-11 rounded-full object-cover border border-gold/40"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border border-gold/40"
                 />
                 <div>
                   <h4 className="font-syne font-bold text-white text-sm">{t.name}</h4>
                   <p className="text-[11px] text-cream-muted font-space">{t.location}</p>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
-        </div>
+        </MotionSection>
       </section>
 
       {/* 8. Futuristic Trust Bar */}
-      <section className="border-y border-gold/20 bg-[#06060c] py-10">
-        <div className="section-pad grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6 text-gold-bright" />
+      <MotionSection className="border-y border-gold/20 bg-[#06060c] py-8 sm:py-10">
+        <div className="section-pad grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-gold-bright" />
             </div>
             <div>
-              <div className="font-syne font-bold text-sm text-white">100% Genuine</div>
-              <div className="text-xs text-cream-muted font-space">Authentic Hologram Seals</div>
+              <div className="font-syne font-bold text-xs sm:text-sm text-white">100% Genuine</div>
+              <div className="text-[10px] sm:text-xs text-cream-muted font-space">Authentic Hologram Seals</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
-              <Truck className="w-6 h-6 text-gold-bright" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-gold-bright" />
             </div>
             <div>
-              <div className="font-syne font-bold text-sm text-white">Fast Nationwide</div>
-              <div className="text-xs text-cream-muted font-space">Safe Courier Delivery</div>
+              <div className="font-syne font-bold text-xs sm:text-sm text-white">Fast Nationwide</div>
+              <div className="text-[10px] sm:text-xs text-cream-muted font-space">Safe Courier Delivery</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
-              <Zap className="w-6 h-6 text-gold-bright" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-gold-bright" />
             </div>
             <div>
-              <div className="font-syne font-bold text-sm text-white">Beast Sillage</div>
-              <div className="text-xs text-cream-muted font-space">14–24hr Tested Projection</div>
+              <div className="font-syne font-bold text-xs sm:text-sm text-white">Beast Sillage</div>
+              <div className="text-[10px] sm:text-xs text-cream-muted font-space">14–24hr Tested Projection</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
-              <Award className="w-6 h-6 text-gold-bright" />
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Award className="w-5 h-5 sm:w-6 sm:h-6 text-gold-bright" />
             </div>
             <div>
-              <div className="font-syne font-bold text-sm text-white">VIP Concierge</div>
-              <div className="text-xs text-cream-muted font-space">Direct Scent Consulting</div>
+              <div className="font-syne font-bold text-xs sm:text-sm text-white">VIP Concierge</div>
+              <div className="text-[10px] sm:text-xs text-cream-muted font-space">Direct Scent Consulting</div>
             </div>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* 9. Newsletter */}
       <Newsletter />
