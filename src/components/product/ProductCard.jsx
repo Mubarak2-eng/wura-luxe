@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, ShoppingBag, Eye } from 'lucide-react'
+import { Heart, ShoppingBag, Eye, Zap, Star, ShieldCheck } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { useCartStore } from '../../store/cartStore'
 import { useWishlistStore } from '../../store/wishlistStore'
 import { formatPrice, discountPercent } from '../../utils/helpers'
@@ -10,137 +11,150 @@ import toast from 'react-hot-toast'
 
 export default function ProductCard({ product }) {
   const [imageLoaded, setImageLoaded] = useState(false)
-  const [hovered, setHovered] = useState(false)
   const { addItem } = useCartStore()
   const { toggle, isWishlisted } = useWishlistStore()
   const wishlisted = isWishlisted(product.id)
 
   const handleAddToCart = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     addItem(product, product.volumes[0])
-    toast.success(`${product.name} added to cart!`, { icon: '🛒', duration: 2500 })
+    toast.success(`${product.name} added to Vault! ✨`, {
+      icon: '🛒',
+      duration: 2500,
+    })
   }
 
   const handleWishlist = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     const added = toggle(product.id)
-    toast(added ? '❤️ Added to wishlist' : 'Removed from wishlist', { duration: 2000 })
+    toast(added ? '❤️ Saved to Wishlist' : 'Removed from Wishlist', { duration: 2000 })
   }
 
   const discount = discountPercent(product.originalPrice, product.price)
 
   return (
-    <Link
-      to={`/product/${product.slug}`}
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       className="group block"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <div
-        className="overflow-hidden transition-all duration-500"
-        style={{
-          background: '#141414',
-          border: `1px solid ${hovered ? 'rgba(201,168,76,0.35)' : '#242018'}`,
-          boxShadow: hovered
-            ? '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.15), inset 0 1px 0 rgba(201,168,76,0.08)'
-            : '0 4px 20px rgba(0,0,0,0.3)',
-          transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
-        }}
-      >
-        {/* Image */}
-        <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
-          {/* Loading skeleton */}
+      <div className="glass-panel rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-gold/20 hover:border-gold/60 transition-all duration-400 flex flex-col justify-between h-full bg-[#08080f]/80 relative overflow-hidden shadow-xl hover:shadow-[0_20px_40px_rgba(212,175,55,0.18)]">
+        
+        {/* Top Floating Glow Pill */}
+        <div className="relative aspect-[3/4] rounded-xl sm:rounded-2xl overflow-hidden mb-4 bg-[#050508] border border-white/10">
           {!imageLoaded && (
-            <div className="absolute inset-0 bg-dark-card animate-pulse" />
+            <div className="absolute inset-0 bg-white/5 animate-pulse" />
           )}
 
-          {/* Main image */}
           <img
             src={product.images[0]}
             alt={product.name}
             loading="lazy"
             onLoad={() => setImageLoaded(true)}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
 
-          {/* Bottom gradient on image */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-dark-card to-transparent" />
+          {/* Bottom Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08080f] via-transparent to-transparent opacity-80" />
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isNew && <Badge variant="new">New</Badge>}
-            {discount > 0 && <Badge variant="sale">-{discount}%</Badge>}
-            {product.bestSeller && !product.isNew && !discount && (
-              <Badge variant="gold">Bestseller</Badge>
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+            {product.stockPhoto && (
+              <span className="bg-gold-bright text-black font-space font-extrabold text-[9px] uppercase tracking-wider px-2 py-0.5 rounded shadow-[0_0_10px_#ffd700]">
+                Live Stock
+              </span>
             )}
+            {product.isNew && <Badge variant="new">New Release</Badge>}
+            {discount > 0 && <Badge variant="sale">-{discount}% OFF</Badge>}
           </div>
 
-          {/* Side action buttons */}
-          <div className="absolute top-3 right-3 flex flex-col gap-2">
-            <button
+          {/* Floating Actions */}
+          <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <motion.button
+              whileTap={{ scale: 0.9 }}
               onClick={handleWishlist}
-              className={`w-9 h-9 flex items-center justify-center border transition-all duration-300 shadow-lg ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${
                 wishlisted
-                  ? 'bg-gold border-gold text-dark'
-                  : 'bg-dark/80 border-dark-border text-cream-muted hover:border-gold hover:text-gold'
-              } ${hovered ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'}`}
-              style={{ transitionDelay: '0ms' }}
+                  ? 'bg-gold border-gold text-black'
+                  : 'bg-black/70 border-white/20 text-cream-soft hover:border-gold hover:text-gold'
+              }`}
+              title="Save to wishlist"
             >
-              <Heart className={`w-4 h-4 ${wishlisted ? 'fill-dark' : ''}`} />
-            </button>
+              <Heart className={`w-3.5 h-3.5 ${wishlisted ? 'fill-black' : ''}`} />
+            </motion.button>
             <Link
               to={`/product/${product.slug}`}
-              onClick={(e) => e.stopPropagation()}
-              className={`w-9 h-9 flex items-center justify-center border bg-dark/80 border-dark-border text-cream-muted hover:border-gold hover:text-gold transition-all duration-300 shadow-lg ${
-                hovered ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'
-              }`}
-              style={{ transitionDelay: '60ms' }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center border bg-black/70 border-white/20 text-cream-soft hover:border-gold hover:text-gold transition-all"
+              title="Quick view"
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Add to cart — slides up on hover */}
-          <div
-            className={`absolute bottom-0 left-0 right-0 transition-transform duration-400 ${
-              hovered ? 'translate-y-0' : 'translate-y-full'
-            }`}
-          >
-            <button
-              onClick={handleAddToCart}
-              className="w-full py-3.5 text-xs font-bold tracking-[0.2em] uppercase flex items-center justify-center gap-2 btn-gold-glow text-dark"
-              style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c97a, #c9a84c)' }}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              Add to Cart
-            </button>
-          </div>
+          {/* Scent Longevity Meter on Card Bottom */}
+          {product.longevity && (
+            <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-[10px] font-space text-cream-muted bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/10">
+              <span className="text-gold-light font-bold flex items-center gap-1">
+                <Zap className="w-2.5 h-2.5 text-gold-bright" />
+                {product.longevity}
+              </span>
+              <span className="text-white/70">{product.sillage}</span>
+            </div>
+          )}
         </div>
 
-        {/* Info */}
-        <div className="p-4 pb-5">
-          <p className="text-xs text-gold/70 tracking-[0.25em] uppercase mb-1.5">
-            {product.fragranceFamily}
-          </p>
-          <h3
-            className="font-playfair text-cream text-lg leading-tight mb-2 transition-colors duration-300"
-            style={{ color: hovered ? '#e8c97a' : '#f5f0e8' }}
-          >
-            {product.name}
-          </h3>
-          <StarRating rating={product.rating} showCount count={product.reviewCount} />
-          <div className="flex items-center gap-2.5 mt-3">
-            <span className="font-playfair text-gold font-bold text-lg">
-              {formatPrice(product.price)}
-            </span>
-            {product.originalPrice && (
-              <span className="text-cream-muted text-sm line-through">
-                {formatPrice(product.originalPrice)}
+        {/* Content */}
+        <div className="flex flex-col flex-1 justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] tracking-[0.25em] text-gold/80 uppercase font-space font-medium truncate max-w-[180px]">
+                {product.fragranceFamily}
               </span>
+              <div className="flex items-center gap-1 text-[11px] text-gold-bright font-space">
+                <Star className="w-3 h-3 fill-gold-bright text-gold-bright" />
+                <span>{product.rating}</span>
+              </div>
+            </div>
+
+            <Link to={`/product/${product.slug}`}>
+              <h3 className="font-syne text-base sm:text-lg font-bold text-white group-hover:text-gold-bright transition-colors line-clamp-1 mb-1">
+                {product.name}
+              </h3>
+            </Link>
+
+            {product.subtitle && (
+              <p className="text-xs text-cream-muted font-space mb-3 line-clamp-1">
+                {product.subtitle}
+              </p>
             )}
           </div>
+
+          {/* Price & Add to Cart button */}
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2 mt-2">
+            <div className="flex flex-col">
+              <span className="font-syne text-base sm:text-lg font-bold text-gold-bright">
+                {formatPrice(product.price)}
+              </span>
+              {product.originalPrice && (
+                <span className="text-[11px] text-cream-muted line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              className="btn-futuristic py-2.5 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
+            >
+              <ShoppingBag className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Add</span>
+            </button>
+          </div>
+
         </div>
       </div>
-    </Link>
+    </motion.div>
   )
 }

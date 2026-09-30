@@ -4,6 +4,7 @@ import Fuse from 'fuse.js'
 import { products } from '../data/products'
 import ProductGrid from '../components/product/ProductGrid'
 import ProductFilter from '../components/product/ProductFilter'
+import { Sparkles } from 'lucide-react'
 
 export default function ShopPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -13,7 +14,6 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState('featured')
   const searchQuery = searchParams.get('search') || ''
 
-  // Sync category from URL
   useEffect(() => {
     const cat = searchParams.get('category')
     if (cat) setActiveCategory(cat)
@@ -22,21 +22,18 @@ export default function ShopPage() {
   const filtered = useMemo(() => {
     let list = [...products]
 
-    // Search
     if (searchQuery) {
       const fuse = new Fuse(list, {
-        keys: ['name', 'description', 'fragranceFamily', 'category'],
+        keys: ['name', 'description', 'fragranceFamily', 'category', 'subtitle'],
         threshold: 0.4,
       })
       list = fuse.search(searchQuery).map((r) => r.item)
     }
 
-    // Category filter
     if (activeCategory !== 'all') {
       list = list.filter((p) => p.category === activeCategory)
     }
 
-    // Sort
     switch (sortBy) {
       case 'price-asc':
         list.sort((a, b) => a.price - b.price)
@@ -50,7 +47,7 @@ export default function ShopPage() {
       case 'newest':
         list = list.filter((p) => p.isNew).concat(list.filter((p) => !p.isNew))
         break
-      default: // featured
+      default:
         list = list.filter((p) => p.featured).concat(list.filter((p) => !p.featured))
     }
 
@@ -68,16 +65,19 @@ export default function ShopPage() {
   }
 
   return (
-    <div className="section-pad py-12">
+    <div className="section-pad py-16">
       {/* Header */}
-      <div className="mb-10">
-        <p className="text-gold text-xs tracking-[0.4em] uppercase mb-2">
-          Our Store
-        </p>
-        <h1 className="font-playfair text-4xl lg:text-5xl text-cream mb-2">
-          {searchQuery ? `Results for "${searchQuery}"` : 'All Fragrances'}
+      <div className="text-center max-w-3xl mx-auto mb-14">
+        <div className="cyber-badge mb-3">
+          <Sparkles className="w-3.5 h-3.5 text-gold-bright" />
+          <span>AUTHENTIC FRAGRANCE VAULT</span>
+        </div>
+        <h1 className="font-syne text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3">
+          {searchQuery ? `Search: "${searchQuery}"` : 'The Fragrance Vault'}
         </h1>
-        <div className="w-16 h-px bg-gold" />
+        <p className="font-cinzel text-gold-light italic text-lg sm:text-xl">
+          "Smell as good as you look!"
+        </p>
       </div>
 
       <ProductFilter

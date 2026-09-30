@@ -1,122 +1,163 @@
 import HeroBanner from '../components/home/HeroBanner'
+import RealStockShowcase from '../components/home/RealStockShowcase'
+import InteractiveScentLab from '../components/home/InteractiveScentLab'
 import FeaturedCollections from '../components/home/FeaturedCollections'
 import BestSellers from '../components/home/BestSellers'
 import OurStory from '../components/home/OurStory'
 import Newsletter from '../components/home/Newsletter'
+import { motion } from 'framer-motion'
+import { Star, ShieldCheck, Sparkles, Truck, Award, Zap } from 'lucide-react'
 
 const testimonials = [
   {
     name: 'Adaeze O.',
-    location: 'Lagos',
-    text: 'Wura Gold is absolutely divine! The longevity is incredible — I still get compliments at the end of the day. Worth every kobo!',
+    location: 'Victoria Island, Lagos',
+    text: '“I bought the Soirée & Cloud Candy combo from Mama Fragrance and people literally stop me in traffic and elevators to ask what I am wearing! Smell as good as you look indeed!”',
     rating: 5,
-    img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80',
+    scent: 'Soirée × Cloud Candy Combo',
+    img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&q=80',
   },
   {
-    name: 'Chidinma E.',
-    location: 'Abuja',
-    text: "The Black Oud Attar is unlike anything I've ever worn. Rich, deep and so unique. I ordered three bottles to stock up!",
+    name: 'Chinedu B.',
+    location: 'Maitama, Abuja',
+    text: '“Shiyaaka Gold arrived the next day in Abuja. The bottle is heavy, pure luxury, and the projection is beast-mode. Lasts over 16 hours on my native attire.”',
     rating: 5,
-    img: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&q=80',
+    scent: 'Shiyaaka Luxury Gold',
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&q=80',
   },
   {
     name: 'Toluwalope A.',
-    location: 'Port Harcourt',
-    text: "The Luxury Gift Set was a birthday gift for my sister and she hasn't stopped raving. The packaging alone is stunning.",
+    location: 'GRA, Port Harcourt',
+    text: '“The Ashantee Flacon Trio is pure class. Three distinct luxury profiles in one box. 100% original stock with intact seals. Mama Fragrance is now my go-to!”',
     rating: 5,
-    img: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=100&q=80',
+    scent: 'Ashantee Prestige Flacon Trio',
+    img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&q=80',
   },
 ]
 
 export default function HomePage() {
   return (
-    <>
+    <div className="relative">
+      {/* 1. Hero with Real Stock Spotlight & Motto */}
       <HeroBanner />
+
+      {/* 2. Real Physical Inventory Spotlight */}
+      <RealStockShowcase />
+
+      {/* 3. Futuristic Interactive Scent Layering Lab */}
+      <InteractiveScentLab />
+
+      {/* 4. Vault Collections */}
       <FeaturedCollections />
+
+      {/* 5. Best Sellers Hall of Signatures */}
       <BestSellers />
+
+      {/* 6. Brand Ethos & Heritage */}
       <OurStory />
 
-      {/* Testimonials */}
-      <section className="section-pad py-24" style={{ background: '#0a0a0a' }}>
-        <div className="text-center mb-16">
-          <span className="eyebrow">What Our Clients Say</span>
-          <h2 className="font-playfair text-5xl text-cream mt-4 mb-5">
-            Loved <span className="gold-text italic">Worldwide</span>
+      {/* 7. Real Client Verified Reviews */}
+      <section className="section-pad py-24 relative overflow-hidden bg-[#040407]">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="cyber-badge mb-3">
+            <Star className="w-3.5 h-3.5 fill-gold-bright text-gold-bright" />
+            <span>AUTHENTIC CLIENT EXPERIENCES</span>
+          </div>
+          <h2 className="font-syne text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-3">
+            Tested &amp; <span className="text-liquid-gold">Obsessed</span>
           </h2>
-          <div className="gold-divider" />
+          <p className="font-cinzel text-gold-light italic text-base sm:text-lg">
+            "Smell as good as you look!"
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {testimonials.map((t, i) => (
-            <div
-              key={i}
-              className="p-7 flex flex-col gap-5 transition-all duration-500"
-              style={{
-                background: 'linear-gradient(145deg, #161616, #111)',
-                border: '1px solid rgba(201,168,76,0.12)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)'
-                e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.1)'
-                e.currentTarget.style.transform = 'translateY(-4px)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(201,168,76,0.12)'
-                e.currentTarget.style.boxShadow = 'none'
-                e.currentTarget.style.transform = 'translateY(0)'
-              }}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((t, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ y: -6 }}
+              className="glass-panel p-7 sm:p-8 rounded-3xl border border-gold/20 hover:border-gold/50 transition-all duration-300 flex flex-col justify-between"
             >
-              {/* Stars */}
-              <div className="flex gap-1">
-                {Array.from({ length: t.rating }).map((_, j) => (
-                  <span key={j} className="text-gold text-base">★</span>
-                ))}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex gap-1 text-gold-bright">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-gold-bright" />
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-space font-bold uppercase tracking-wider text-gold-light bg-gold/10 border border-gold/20 px-2.5 py-0.5 rounded-full truncate max-w-[170px]">
+                    {t.scent}
+                  </span>
+                </div>
+
+                <p className="text-sm text-cream-soft leading-relaxed mb-6 font-light italic">
+                  {t.text}
+                </p>
               </div>
-              {/* Quote mark */}
-              <div className="font-playfair text-5xl text-gold/20 leading-none -mt-2">"</div>
-              <p className="text-cream-soft text-sm leading-relaxed -mt-4">
-                {t.text}
-              </p>
-              <div className="mt-auto pt-5 border-t border-dark-border flex items-center gap-3">
-                <img src={t.img} alt={t.name} className="w-10 h-10 rounded-full object-cover border border-gold/20" />
+
+              <div className="pt-4 border-t border-white/10 flex items-center gap-3">
+                <img
+                  src={t.img}
+                  alt={t.name}
+                  className="w-11 h-11 rounded-full object-cover border border-gold/40"
+                />
                 <div>
-                  <p className="text-cream font-medium text-sm">{t.name}</p>
-                  <p className="text-cream-muted text-xs">{t.location}, Nigeria</p>
+                  <h4 className="font-syne font-bold text-white text-sm">{t.name}</h4>
+                  <p className="text-[11px] text-cream-muted font-space">{t.location}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
 
-      {/* Brand promise strip */}
-      <section
-        className="section-pad py-12"
-        style={{
-          background: 'linear-gradient(135deg, #0e0b05, #0a0a0a, #0e0b05)',
-          borderTop: '1px solid rgba(201,168,76,0.12)',
-          borderBottom: '1px solid rgba(201,168,76,0.12)',
-        }}
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-          {[
-            { icon: '🌿', title: 'Premium Ingredients', desc: 'Sourced globally' },
-            { icon: '✈️', title: 'Nationwide Delivery', desc: 'All across Nigeria' },
-            { icon: '🎁', title: 'Luxury Packaging', desc: 'Gift-ready always' },
-            { icon: '💬', title: 'WhatsApp Support', desc: 'Available 7 days' },
-          ].map(({ icon, title, desc }) => (
-            <div key={title} className="flex flex-col items-center text-center gap-3">
-              <span className="text-3xl">{icon}</span>
-              <div>
-                <p className="text-cream font-medium text-sm">{title}</p>
-                <p className="text-cream-muted text-xs mt-0.5">{desc}</p>
-              </div>
+      {/* 8. Futuristic Trust Bar */}
+      <section className="border-y border-gold/20 bg-[#06060c] py-10">
+        <div className="section-pad grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-6 h-6 text-gold-bright" />
             </div>
-          ))}
+            <div>
+              <div className="font-syne font-bold text-sm text-white">100% Genuine</div>
+              <div className="text-xs text-cream-muted font-space">Authentic Hologram Seals</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Truck className="w-6 h-6 text-gold-bright" />
+            </div>
+            <div>
+              <div className="font-syne font-bold text-sm text-white">Fast Nationwide</div>
+              <div className="text-xs text-cream-muted font-space">Safe Courier Delivery</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Zap className="w-6 h-6 text-gold-bright" />
+            </div>
+            <div>
+              <div className="font-syne font-bold text-sm text-white">Beast Sillage</div>
+              <div className="text-xs text-cream-muted font-space">14–24hr Tested Projection</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gold/10 border border-gold/30 flex items-center justify-center shrink-0">
+              <Award className="w-6 h-6 text-gold-bright" />
+            </div>
+            <div>
+              <div className="font-syne font-bold text-sm text-white">VIP Concierge</div>
+              <div className="text-xs text-cream-muted font-space">Direct Scent Consulting</div>
+            </div>
+          </div>
         </div>
       </section>
 
+      {/* 9. Newsletter */}
       <Newsletter />
-    </>
+    </div>
   )
 }

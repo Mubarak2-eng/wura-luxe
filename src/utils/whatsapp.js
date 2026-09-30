@@ -14,7 +14,7 @@ export const buildWhatsAppLink = (message) => {
  */
 export const whatsAppChatLink = () =>
   buildWhatsAppLink(
-    'Hello! I visited your website and I would like to enquire about your fragrances. 🌸'
+    'Hello Mama Fragrance! 🌸 I visited your website and I want to order some perfumes. "Smell as good as you look!" ✨'
   )
 
 /**
@@ -26,14 +26,15 @@ export const whatsAppOrderLink = (cartItems, total) => {
   )
 
   const message = [
-    '🌟 *New Order from Wura Luxe & Scents Website*',
+    '✨ *New Order from Mama Fragrance*',
+    '_Smell as good as you look!_',
     '',
-    '*Items Ordered:*',
+    '*Selected Fragrances:*',
     ...lines,
     '',
     `*Total: ₦${total.toLocaleString()}*`,
     '',
-    'Please confirm availability and share payment details. Thank you! 🙏',
+    'Please confirm stock availability and send payment / delivery details. Thank you! 👑✨',
   ].join('\n')
 
   return buildWhatsAppLink(message)
@@ -44,5 +45,5 @@ export const whatsAppOrderLink = (cartItems, total) => {
  */
 export const whatsAppProductEnquiry = (productName) =>
   buildWhatsAppLink(
-    `Hello! I'm interested in *${productName}* from your website. Could you please provide more details? 🌸`
+    `Hello Mama Fragrance! 🌸 I am interested in *${productName}*. Please let me know if it is currently in stock! ✨`
   )

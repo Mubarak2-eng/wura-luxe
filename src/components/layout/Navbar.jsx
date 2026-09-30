@@ -1,5 +1,5 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import {
   ShoppingBag,
   Heart,
@@ -8,7 +8,10 @@ import {
   X,
   User,
   ChevronDown,
+  Sparkles,
+  Zap,
 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useCartStore, getCartItemCount } from '../../store/cartStore'
 import { useWishlistStore } from '../../store/wishlistStore'
 import { useAuthStore } from '../../store/authStore'
@@ -44,243 +47,313 @@ export default function Navbar() {
   }
 
   const navLinks = [
-    { to: '/shop', label: 'Shop' },
-    { to: '/about', label: 'About' },
-    { to: '/gallery', label: 'Lookbook' },
-    { to: '/contact', label: 'Contact' },
+    { to: '/', label: 'Home' },
+    { to: '/shop', label: 'Vault / Shop' },
+    { to: '/gallery', label: 'Stock Lookbook' },
+    { to: '/about', label: 'Our Story' },
+    { to: '/contact', label: 'VIP Concierge' },
   ]
 
   return (
     <>
-      {/* Announcement bar */}
-      <div className="bg-gold text-dark text-center py-2 text-xs tracking-widest font-medium uppercase">
-        Free shipping on orders over ₦50,000 &nbsp;|&nbsp; Use code{' '}
-        <strong>WURA10</strong> for 10% off
+      {/* Futuristic Ambient Announcement Bar */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#030305] via-[#1a1506] to-[#030305] border-b border-gold/20 py-2 px-4 text-center">
+        <div className="flex items-center justify-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-gold-light">
+          <motion.span
+            animate={{ scale: [1, 1.2, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-gold-bright inline mr-1" />
+          </motion.span>
+          <span className="text-white">MAMA FRAGRANCE:</span>
+          <span className="text-gold-bright font-bold hidden sm:inline">"Smell as good as you look!"</span>
+          <span className="mx-2 text-gold/40 hidden md:inline">•</span>
+          <span className="text-gold/90 hidden md:inline">Express Delivery Across Nigeria</span>
+        </div>
       </div>
 
       <header
-        className={`sticky top-0 z-40 transition-all duration-300 ${
+        className={`sticky top-0 z-40 transition-all duration-500 ${
           scrolled
-            ? 'bg-dark/95 backdrop-blur-md border-b border-dark-border shadow-lg shadow-black/50'
-            : 'bg-dark'
+            ? 'bg-[#030305]/85 backdrop-blur-xl border-b border-gold/20 shadow-[0_10px_35px_rgba(0,0,0,0.8)]'
+            : 'bg-[#030305]/60 backdrop-blur-md border-b border-white/5'
         }`}
       >
-        <div className="section-pad flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex flex-col items-start leading-none group">
-            <span className="font-playfair text-xl lg:text-2xl font-bold text-gold tracking-wide group-hover:text-gold-light transition-colors">
-              Wura Luxe
-            </span>
-            <span className="text-[10px] tracking-[0.3em] text-cream-muted uppercase group-hover:text-cream-soft transition-colors">
-              &amp; Scents
-            </span>
+        <div className="section-pad flex items-center justify-between h-20 lg:h-24">
+          {/* Logo with Futuristic Holographic Glow */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-gold-bright via-gold to-gold-dark p-[1px] shadow-[0_0_20px_rgba(212,175,55,0.35)] group-hover:shadow-[0_0_30px_rgba(255,215,0,0.6)] transition-all duration-300">
+              <div className="w-full h-full bg-[#07070b] rounded-[11px] flex items-center justify-center">
+                <span className="font-cinzel text-xl font-black text-transparent bg-clip-text bg-gradient-to-tr from-gold-light via-gold-bright to-white group-hover:scale-110 transition-transform">
+                  M
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="font-syne text-xl lg:text-2xl font-extrabold tracking-tight text-white group-hover:text-gold-light transition-colors">
+                MAMA <span className="text-liquid-gold">FRAGRANCE</span>
+              </span>
+              <span className="text-[9px] tracking-[0.35em] text-gold/80 uppercase font-space font-medium">
+                Smell as good as you look!
+              </span>
+            </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8">
+          {/* Desktop Navigation with futuristic underline hover indicator */}
+          <nav className="hidden lg:flex items-center gap-9">
             {navLinks.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `text-sm tracking-widest uppercase transition-colors duration-200 pb-0.5 ${
+                  `relative text-xs tracking-[0.2em] uppercase font-semibold transition-all duration-300 py-2 ${
                     isActive
-                      ? 'text-gold border-b border-gold'
-                      : 'text-cream-soft hover:text-gold border-b border-transparent hover:border-gold/50'
+                      ? 'text-gold-bright font-bold'
+                      : 'text-cream-soft hover:text-white'
                   }`
                 }
               >
-                {link.label}
+                {({ isActive }) => (
+                  <>
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-underline"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold-bright to-transparent shadow-[0_0_10px_#ffd700]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
 
-          {/* Icons */}
-          <div className="flex items-center gap-1 lg:gap-2">
-            {/* Search */}
-            <button
+          {/* Action Icons */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search Trigger */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setSearchOpen((v) => !v)}
-              className="p-2 text-cream-muted hover:text-gold transition-colors"
+              className="p-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-cream-soft hover:text-gold hover:border-gold/40 transition-colors"
+              aria-label="Search"
             >
-              <Search className="w-5 h-5" />
-            </button>
+              <Search className="w-4 h-4" />
+            </motion.button>
 
             {/* Wishlist */}
             <Link
               to="/account/wishlist"
-              className="relative p-2 text-cream-muted hover:text-gold transition-colors"
+              className="relative p-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-cream-soft hover:text-gold hover:border-gold/40 transition-colors"
+              aria-label="Wishlist"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4" />
               {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-gold text-dark text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-gold to-gold-bright text-black text-[10px] font-black rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.8)]">
                   {wishlistCount}
                 </span>
               )}
             </Link>
 
-            {/* Account dropdown */}
-            <div className="relative hidden lg:block">
-              <button
+            {/* Account Menu */}
+            <div className="relative hidden sm:block">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setAccountOpen((v) => !v)}
-                className="flex items-center gap-1 p-2 text-cream-muted hover:text-gold transition-colors"
+                className="flex items-center gap-1.5 p-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-cream-soft hover:text-gold hover:border-gold/40 transition-colors"
               >
-                <User className="w-5 h-5" />
-                <ChevronDown className="w-3 h-3" />
-              </button>
-              {accountOpen && (
-                <div
-                  className="absolute right-0 mt-1 w-48 bg-dark-card border border-dark-border shadow-xl z-50 py-1"
-                  onMouseLeave={() => setAccountOpen(false)}
-                >
-                  {user ? (
-                    <>
-                      <div className="px-4 py-2 text-sm text-cream-muted border-b border-dark-border truncate">
-                        Hello, {user.name?.split(' ')[0]}
-                      </div>
-                      {[
-                        { to: '/account/profile', label: 'My Profile' },
-                        { to: '/account/orders', label: 'My Orders' },
-                        { to: '/account/wishlist', label: 'My Wishlist' },
-                      ].map(({ to, label }) => (
-                        <Link
-                          key={to}
-                          to={to}
-                          onClick={() => setAccountOpen(false)}
-                          className="block px-4 py-2 text-sm text-cream hover:text-gold hover:bg-dark-hover transition-colors"
+                <User className="w-4 h-4" />
+                <ChevronDown className="w-3 h-3 text-gold" />
+              </motion.button>
+
+              <AnimatePresence>
+                {accountOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-56 glass-panel rounded-xl shadow-2xl z-50 py-2 border border-gold/30"
+                    onMouseLeave={() => setAccountOpen(false)}
+                  >
+                    {user ? (
+                      <>
+                        <div className="px-4 py-2 text-xs text-gold font-space border-b border-white/10">
+                          LOGGED IN AS <br />
+                          <span className="text-white font-bold text-sm font-jakarta">{user.name}</span>
+                        </div>
+                        {[
+                          { to: '/account/profile', label: 'My VIP Profile' },
+                          { to: '/account/orders', label: 'Order History' },
+                          { to: '/account/wishlist', label: 'Saved Scents' },
+                        ].map(({ to, label }) => (
+                          <Link
+                            key={to}
+                            to={to}
+                            onClick={() => setAccountOpen(false)}
+                            className="block px-4 py-2.5 text-xs tracking-wider uppercase text-cream-soft hover:text-gold-bright hover:bg-gold/10 transition-colors"
+                          >
+                            {label}
+                          </Link>
+                        ))}
+                        <button
+                          onClick={() => {
+                            logout()
+                            setAccountOpen(false)
+                          }}
+                          className="block w-full text-left px-4 py-2.5 text-xs tracking-wider uppercase text-red-400 hover:bg-red-500/10 transition-colors border-t border-white/10 mt-1"
                         >
-                          {label}
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link
+                          to="/account/login"
+                          onClick={() => setAccountOpen(false)}
+                          className="block px-4 py-2.5 text-xs tracking-wider uppercase text-cream hover:text-gold-bright hover:bg-gold/10 transition-colors"
+                        >
+                          Sign In
                         </Link>
-                      ))}
-                      <button
-                        onClick={() => { logout(); setAccountOpen(false) }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-dark-hover transition-colors"
-                      >
-                        Sign Out
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        to="/account/login"
-                        onClick={() => setAccountOpen(false)}
-                        className="block px-4 py-2 text-sm text-cream hover:text-gold hover:bg-dark-hover transition-colors"
-                      >
-                        Sign In
-                      </Link>
-                      <Link
-                        to="/account/signup"
-                        onClick={() => setAccountOpen(false)}
-                        className="block px-4 py-2 text-sm text-cream hover:text-gold hover:bg-dark-hover transition-colors"
-                      >
-                        Create Account
-                      </Link>
-                    </>
-                  )}
-                </div>
-              )}
+                        <Link
+                          to="/account/signup"
+                          onClick={() => setAccountOpen(false)}
+                          className="block px-4 py-2.5 text-xs tracking-wider uppercase text-gold-bright hover:bg-gold/10 transition-colors font-bold"
+                        >
+                          Create VIP Account
+                        </Link>
+                      </>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Cart */}
-            <button
+            {/* Glowing Futuristic Cart Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setCartOpen(true)}
-              className="relative p-2 text-cream-muted hover:text-gold transition-colors"
+              className="relative flex items-center gap-2.5 px-4 py-2 rounded-xl bg-gradient-to-r from-gold-dark/40 via-gold/30 to-gold-bright/20 border border-gold/50 text-gold-light hover:border-gold shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:shadow-[0_0_30px_rgba(255,215,0,0.5)] transition-all"
+              aria-label="Shopping Cart"
             >
-              <ShoppingBag className="w-5 h-5" />
-              {itemCount > 0 && (
-                <span className="absolute top-1 right-1 w-4 h-4 bg-gold text-dark text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {itemCount > 9 ? '9+' : itemCount}
-                </span>
-              )}
-            </button>
+              <ShoppingBag className="w-4 h-4 text-gold-bright" />
+              <span className="text-xs font-bold font-space uppercase hidden sm:inline">Vault</span>
+              <span className="bg-gold-bright text-black text-[11px] font-extrabold px-2 py-0.5 rounded-full shadow-[0_0_10px_#ffd700]">
+                {itemCount}
+              </span>
+            </motion.button>
 
-            {/* Mobile toggle */}
+            {/* Mobile menu button */}
             <button
-              className="lg:hidden p-2 text-cream-muted hover:text-gold transition-colors"
+              className="lg:hidden p-2.5 rounded-lg bg-white/[0.03] border border-white/10 text-cream-soft hover:text-gold"
               onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle Menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* Search bar */}
-        {searchOpen && (
-          <div className="border-t border-dark-border px-4 py-3 bg-dark-secondary animate-slide-up">
-            <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl mx-auto">
-              <input
-                autoFocus
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search fragrances…"
-                className="flex-1 bg-dark-card border border-dark-border text-cream placeholder-cream-muted px-4 py-2 text-sm focus:outline-none focus:border-gold"
-              />
-              <button
-                type="submit"
-                className="px-5 py-2 bg-gold text-dark text-sm font-semibold hover:bg-gold-light transition-colors"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        )}
+        {/* Futuristic Search Modal Dropdown */}
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-t border-gold/20 bg-[#06060a]/95 backdrop-blur-2xl overflow-hidden"
+            >
+              <div className="section-pad py-5">
+                <form onSubmit={handleSearch} className="flex items-center gap-3 max-w-3xl mx-auto">
+                  <div className="relative flex-1">
+                    <Search className="w-5 h-5 text-gold absolute left-4 top-1/2 -translate-y-1/2" />
+                    <input
+                      autoFocus
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search Shiyaaka Gold, Soirée, Ashantee, Ouds, Gourmands..."
+                      className="w-full bg-[#0f0f18] border border-gold/30 rounded-xl pl-12 pr-4 py-3.5 text-sm text-white placeholder-cream-muted focus:outline-none focus:border-gold-bright focus:ring-1 focus:ring-gold-bright transition-all"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-futuristic px-6 py-3.5 rounded-xl text-xs font-bold"
+                  >
+                    Search
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <nav className="lg:hidden bg-dark-secondary border-t border-dark-border py-4 animate-slide-up">
-            <div className="section-pad flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `py-3 text-sm tracking-widest uppercase border-b border-dark-border transition-colors ${
-                      isActive ? 'text-gold' : 'text-cream-soft hover:text-gold'
-                    }`
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
-              <div className="pt-3 flex flex-col gap-1">
-                {user ? (
-                  <>
-                    <Link
-                      to="/account/profile"
-                      onClick={() => setMobileOpen(false)}
-                      className="py-3 text-sm tracking-widest uppercase text-cream-soft hover:text-gold border-b border-dark-border"
-                    >
-                      My Account
-                    </Link>
-                    <button
-                      onClick={() => { logout(); setMobileOpen(false) }}
-                      className="py-3 text-sm tracking-widest uppercase text-red-400 text-left"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
+        {/* Mobile Navigation Drawer */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.nav
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-[#07070c]/98 backdrop-blur-2xl border-t border-gold/20 py-6"
+            >
+              <div className="section-pad flex flex-col gap-3">
+                <div className="text-[10px] text-gold/70 tracking-[0.3em] uppercase font-space mb-1">
+                  Navigation Menu
+                </div>
+                {navLinks.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMobileOpen(false)}
+                    className={({ isActive }) =>
+                      `py-3 px-4 rounded-xl text-sm font-semibold tracking-wider uppercase transition-all flex items-center justify-between ${
+                        isActive
+                          ? 'bg-gold/15 text-gold-bright border border-gold/40'
+                          : 'text-cream-soft hover:bg-white/5 hover:text-white'
+                      }`
+                    }
+                  >
+                    <span>{link.label}</span>
+                    <Zap className="w-3.5 h-3.5 opacity-40 text-gold" />
+                  </NavLink>
+                ))}
+                <div className="pt-4 border-t border-white/10 flex flex-col gap-2">
+                  {user ? (
+                    <>
+                      <Link
+                        to="/account/profile"
+                        onClick={() => setMobileOpen(false)}
+                        className="py-2.5 px-4 text-xs font-semibold tracking-wider uppercase text-gold-light"
+                      >
+                        VIP Profile ({user.name})
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout()
+                          setMobileOpen(false)
+                        }}
+                        className="text-left py-2.5 px-4 text-xs font-semibold tracking-wider uppercase text-red-400"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
                     <Link
                       to="/account/login"
                       onClick={() => setMobileOpen(false)}
-                      className="py-3 text-sm tracking-widest uppercase text-cream-soft hover:text-gold border-b border-dark-border"
+                      className="btn-futuristic text-center py-3 rounded-xl text-xs font-bold"
                     >
-                      Sign In
+                      Sign In / Register VIP
                     </Link>
-                    <Link
-                      to="/account/signup"
-                      onClick={() => setMobileOpen(false)}
-                      className="py-3 text-sm tracking-widest uppercase text-cream-soft hover:text-gold"
-                    >
-                      Create Account
-                    </Link>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          </nav>
-        )}
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </header>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />

@@ -11,115 +11,192 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
-    background-color: #080808;
-    color: #f5f0e8;
-    font-family: 'Inter', sans-serif;
+    background-color: #030305;
+    color: #f4efe6;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Subtle noise texture */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    overflow-x: hidden;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+  h1, h2, h3, h4 {
+    font-family: 'Syne', 'Cinzel', serif;
+    letter-spacing: -0.02em;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: #080808; }
-  ::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #e8c97a; }
+  /* Custom high-tech scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #030305;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d4af37, #997a15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+  }
 
   ::selection {
-    background: #c9a84c40;
-    color: #e8c97a;
+    background: rgba(212, 175, 55, 0.35);
+    color: #ffd700;
   }
 }
 
 @layer components {
-  /* ── Gold gradient text ── */
-  .gold-text {
-    background: linear-gradient(135deg, #c9a84c 0%, #f0d882 45%, #c9a84c 75%, #a07c2d 100%);
+  /* ── Liquid Gold Gradient Text ── */
+  .text-liquid-gold {
+    background: linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #ffd700 25%,
+      #d4af37 50%,
+      #f5e29f 75%,
+      #ffd700 100%
+    );
+    background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: shine 6s linear infinite;
   }
 
-  /* ── Section header gold divider ── */
-  .gold-divider {
-    @apply w-16 h-px mx-auto;
-    background: linear-gradient(90deg, transparent, #c9a84c, transparent);
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
   }
 
-  /* ── Luxury card with glow on hover ── */
-  .luxury-card {
-    @apply bg-dark-card border border-dark-border transition-all duration-500;
+  .text-glow {
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.4), 0 0 50px rgba(212, 175, 55, 0.2);
+  }
+
+  /* ── Futuristic Frosted Glass Panel ── */
+  .glass-panel {
+    background: rgba(10, 10, 18, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-panel-interactive {
+    background: rgba(10, 10, 18, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-panel-interactive:hover {
+    border-color: rgba(212, 175, 55, 0.5);
+    transform: translateY(-6px);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+
+  /* ── Glowing Gold Button ── */
+  .btn-futuristic {
     position: relative;
+    background: linear-gradient(135deg, #ffd700 0%, #d4af37 50%, #b89222 100%);
+    color: #030305;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    overflow: hidden;
   }
-  .luxury-card::before {
+
+  .btn-futuristic::after {
     content: '';
     position: absolute;
-    inset: -1px;
-    background: linear-gradient(135deg, #c9a84c22, transparent 50%, #c9a84c11);
-    opacity: 0;
-    transition: opacity 0.5s;
+    top: -50%;
+    left: -60%;
+    width: 20%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    transform: rotate(30deg);
+    transition: all 0.75s ease;
+  }
+
+  .btn-futuristic:hover::after {
+    left: 140%;
+  }
+
+  .btn-futuristic:hover {
+    box-shadow: 0 0 45px rgba(212, 175, 55, 0.7), 0 0 15px rgba(255, 215, 0, 0.9);
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  /* ── Outline Futuristic Button ── */
+  .btn-futuristic-outline {
+    background: rgba(12, 12, 22, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: #ffd700;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-futuristic-outline:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #ffd700;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.35);
+    transform: translateY(-2px);
+    color: #ffffff;
+  }
+
+  /* ── Cybernetic Section Badge ── */
+  .cyber-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 1rem;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #ffd700;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+
+  /* ── Scent Aura background effect ── */
+  .scent-aura-bg {
+    position: relative;
+  }
+  .scent-aura-bg::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, rgba(255, 110, 199, 0.05) 40%, transparent 70%);
+    transform: translate(-50%, -50%);
+    filter: blur(80px);
     pointer-events: none;
     z-index: 0;
   }
-  .luxury-card:hover::before {
-    opacity: 1;
-  }
-  .luxury-card:hover {
-    border-color: rgba(201, 168, 76, 0.4);
-    box-shadow: 0 8px 40px rgba(201, 168, 76, 0.08), 0 0 0 1px rgba(201, 168, 76, 0.1);
-    transform: translateY(-2px);
-  }
 
-  /* ── Gold glow button effect ── */
-  .btn-gold-glow {
-    box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: box-shadow 0.3s, transform 0.2s;
-  }
-  .btn-gold-glow:hover {
-    box-shadow: 0 0 35px rgba(201, 168, 76, 0.5), inset 0 1px 0 rgba(255,255,255,0.15);
-    transform: translateY(-1px);
-  }
-
-  /* ── Radiant section background ── */
-  .radiant-bg {
-    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 70%),
-                #0d0d0d;
-  }
-
-  /* ── Section padding ── */
   .section-pad {
-    @apply px-4 sm:px-6 lg:px-12 xl:px-20;
-  }
-
-  /* ── Eyebrow label ── */
-  .eyebrow {
-    @apply text-xs tracking-[0.45em] uppercase font-medium;
-    color: #c9a84c;
-    letter-spacing: 0.42em;
-  }
-
-  /* ── Image overlay gradient ── */
-  .img-overlay {
-    background: linear-gradient(to top, #080808 0%, rgba(8,8,8,0.5) 40%, rgba(8,8,8,0.1) 100%);
+    @apply px-4 sm:px-6 lg:px-12 xl:px-20 max-w-7xl mx-auto;
   }
 }
 
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Gold border gradient */
-  .border-gold-gradient {
-    border: 1px solid transparent;
-    background-clip: padding-box;
-    position: relative;
-  }
+/* ── Interactive futuristic grid lines ── */
+.bg-cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
 }

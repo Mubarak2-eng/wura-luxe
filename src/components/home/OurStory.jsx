@@ -1,88 +1,102 @@
 import { Link } from 'react-router-dom'
+import { Sparkles, ShieldCheck, Award, HeartHandshake, Compass } from 'lucide-react'
 
 export default function OurStory() {
   return (
-    <section className="section-pad py-24 radiant-bg overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-        {/* Image collage */}
-        <div className="relative h-[500px] lg:h-[600px]">
-          {/* Main image */}
-          <div
-            className="absolute left-0 top-0 w-4/5 h-4/5 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=85')",
-            }}
-          />
-          {/* Accent image */}
-          <div
-            className="absolute right-0 bottom-0 w-2/3 h-2/3 bg-cover bg-center border-4 border-dark"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=600&q=85')",
-            }}
-          />
-          {/* Gold frame accent */}
-          <div
-            className="absolute left-4 top-4 w-4/5 h-4/5 border border-gold/20 pointer-events-none"
-            style={{ transform: 'translate(12px, 12px)' }}
-          />
-          {/* Floating badge */}
-          <div
-            className="absolute bottom-[32%] left-[48%] -translate-x-1/2 bg-dark-card/90 backdrop-blur-sm border border-gold/30 px-6 py-4 text-center"
-            style={{ boxShadow: '0 0 30px rgba(201,168,76,0.15)' }}
-          >
-            <p className="font-playfair text-4xl gold-text font-bold">5+</p>
-            <p className="text-xs text-cream-muted tracking-widest uppercase mt-1">Years of Craft</p>
+    <section className="section-pad py-24 relative overflow-hidden bg-[#030305]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        {/* Left Visual Stock Showcase */}
+        <div className="lg:col-span-6 relative">
+          <div className="relative aspect-[4/5] rounded-3xl overflow-hidden glass-panel p-2 border border-gold/30 shadow-2xl">
+            <div className="w-full h-full rounded-2xl overflow-hidden relative">
+              <img
+                src="/images/products/ashantee-trio.jpg"
+                alt="Mama Fragrance Verified Stock"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              
+              <div className="absolute bottom-6 left-6 right-6 glass-panel p-4 rounded-2xl border border-gold/40">
+                <p className="font-cinzel text-gold-bright text-base font-bold italic">
+                  "Smell as good as you look!"
+                </p>
+                <p className="text-[11px] text-cream-muted font-space uppercase tracking-widest mt-1">
+                  100% Genuine Arabian & French Fragrances
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating Trust Accent Badge */}
+          <div className="absolute -top-6 -right-6 hidden sm:flex items-center gap-3 glass-panel px-5 py-3 rounded-2xl border border-gold/40 shadow-[0_0_30px_rgba(212,175,55,0.3)]">
+            <Award className="w-6 h-6 text-gold-bright" />
+            <div>
+              <div className="text-xs font-syne font-black text-white">GENUINE FLACONS</div>
+              <div className="text-[10px] text-gold-light font-space">NO WATERED DOWN DILUTIONS</div>
+            </div>
           </div>
         </div>
 
-        {/* Text */}
-        <div className="animate-fade-in">
-          <span className="eyebrow">Our Heritage</span>
-          <h2 className="font-playfair text-5xl lg:text-6xl text-cream mt-5 mb-6 leading-tight">
-            Rooted in Culture,
-            <br />
-            <span className="gold-text italic">Crafted in Luxury</span>
-          </h2>
-          <p className="text-cream-soft leading-relaxed mb-5 text-base">
-            Wura Luxe & Scents was born from a deep love of fragrance and a
-            desire to celebrate African elegance on the world stage. The name
-            "Wura" — Yoruba for gold — reflects our commitment to excellence in
-            everything we do.
-          </p>
-          <p className="text-cream-muted leading-relaxed mb-10 text-base">
-            From the ancient attar traditions of the Middle East to the vibrant
-            florals of West Africa, every fragrance in our collection is a story
-            waiting to be worn.
-          </p>
-
-          {/* Values */}
-          <div className="grid grid-cols-2 gap-5 mb-10">
-            {[
-              { title: 'Authentic', desc: 'Rooted in real culture & heritage' },
-              { title: 'Premium', desc: 'Finest global raw ingredients' },
-              { title: 'Artisan', desc: 'Small-batch, handcrafted quality' },
-              { title: 'Lasting', desc: 'Fragrances that stay with you' },
-            ].map(({ title, desc }) => (
-              <div key={title} className="flex items-start gap-3">
-                <div
-                  className="w-0.5 h-10 shrink-0 mt-1"
-                  style={{ background: 'linear-gradient(to bottom, #c9a84c, transparent)' }}
-                />
-                <div>
-                  <p className="text-cream font-semibold text-sm">{title}</p>
-                  <p className="text-cream-muted text-xs mt-0.5">{desc}</p>
-                </div>
-              </div>
-            ))}
+        {/* Right Story Text */}
+        <div className="lg:col-span-6">
+          <div className="cyber-badge mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-gold-bright" />
+            <span>THE MAMA FRAGRANCE ETHOS</span>
           </div>
 
-          <Link
-            to="/about"
-            className="group inline-flex items-center gap-3 text-sm text-gold border border-gold/40 px-8 py-4 hover:bg-gold hover:text-dark hover:border-gold transition-all duration-300 tracking-widest uppercase"
-          >
-            Read Our Full Story
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
+          <h2 className="font-syne text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-4">
+            Where Elegance Meets <br />
+            <span className="text-liquid-gold">Magnetic Sillage</span>
+          </h2>
+
+          <p className="font-cinzel text-gold-light text-xl italic font-semibold mb-6">
+            "Smell as good as you look!"
+          </p>
+
+          <p className="text-cream-soft text-sm sm:text-base leading-relaxed mb-6 font-light">
+            At <strong>Mama Fragrance</strong>, we believe fragrance is not just an accessory—it is an invisible crown. A statement of who you are before you even speak.
+          </p>
+          <p className="text-cream-muted text-sm sm:text-base leading-relaxed mb-8 font-light">
+            We scour the finest perfumeries in the UAE, Paris, and beyond to bring you beast-mode Arabian heavyweights like <em>Shiyaaka Gold</em>, viral layering sensations like <em>Soirée & Cloud Candy</em>, and prestige collectors' suites like <em>Ashantee</em>. Every bottle is 100% genuine and curated to leave an unforgettable impression wherever you step.
+          </p>
+
+          {/* Value Pillars */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10">
+              <div className="flex items-center gap-2 text-gold-bright font-syne font-bold text-sm mb-1">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Verified Stock Only</span>
+              </div>
+              <p className="text-xs text-cream-muted leading-relaxed">
+                Direct from licensed distributors with authentic hologram seals.
+              </p>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10">
+              <div className="flex items-center gap-2 text-gold-bright font-syne font-bold text-sm mb-1">
+                <HeartHandshake className="w-4 h-4" />
+                <span>Custom Scent Advisory</span>
+              </div>
+              <p className="text-xs text-cream-muted leading-relaxed">
+                Direct WhatsApp consultation to match your mood and occasion.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <Link
+              to="/about"
+              className="btn-futuristic px-7 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+            >
+              Explore Our Philosophy
+            </Link>
+            <Link
+              to="/contact"
+              className="btn-futuristic-outline px-7 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider"
+            >
+              Speak to Scent Concierge
+            </Link>
+          </div>
         </div>
       </div>
     </section>

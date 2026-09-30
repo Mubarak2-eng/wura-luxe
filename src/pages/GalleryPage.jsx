@@ -1,66 +1,74 @@
 import { useState } from 'react'
-import { X } from 'lucide-react'
+import { X, Sparkles, ShieldCheck, Eye } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 const galleryImages = [
   {
-    src: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800&q=80',
-    alt: 'Oud Royale',
-    tag: 'Eau de Parfum',
+    src: '/images/products/shiyaaka-gold.jpg',
+    alt: 'Shiyaaka Luxury Gold — Khadlaj Pyramid Gold Flacon',
+    tag: 'Live In-Stock',
+    category: 'Eau de Parfum',
+    slug: 'shiyaaka-luxury-gold',
+    realStock: true,
   },
   {
-    src: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&q=80',
-    alt: 'Wura Gold',
-    tag: 'Signature',
+    src: '/images/products/soiree-cloud-candy.jpg',
+    alt: 'Soirée & Cloud Candy Layering Combo — The Compliment Duo',
+    tag: 'Live In-Stock',
+    category: 'Viral Layering Set',
+    slug: 'soiree-cloud-candy-layering-combo',
+    realStock: true,
   },
   {
-    src: 'https://images.unsplash.com/photo-1608528577891-eb055944f2e7?w=800&q=80',
-    alt: 'Midnight Bloom',
-    tag: 'Dark Floral',
+    src: '/images/products/ashantee-trio.jpg',
+    alt: 'Ashantee Prestige Flacon Trio (Intense, Floral, Far Away)',
+    tag: 'Live In-Stock',
+    category: 'Collector Trio',
+    slug: 'ashantee-prestige-trio',
+    realStock: true,
   },
   {
-    src: 'https://images.unsplash.com/photo-1621243804936-775306a8f2e3?w=800&q=80',
-    alt: 'Black Oud Attar',
-    tag: 'Attar',
+    src: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?w=800&q=85',
+    alt: 'Khamrah Amber Royale Niche Elixir',
+    tag: 'Gourmand Classic',
+    category: 'Eau de Parfum',
+    slug: 'khamrah-amber-royale',
   },
   {
-    src: 'https://images.unsplash.com/photo-1603905219403-0dbe4b64a5c1?w=800&q=80',
-    alt: 'Oud & Amber Candle',
-    tag: 'Home Fragrance',
+    src: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=800&q=85',
+    alt: 'Club Noir Intense Beast Mode Sillage',
+    tag: 'Chypre Beast',
+    category: 'Men Fragrance',
+    slug: 'club-noir-intense-man',
   },
   {
-    src: 'https://images.unsplash.com/photo-1549497538-303791108f95?w=800&q=80',
-    alt: 'Luxury Gift Set',
-    tag: 'Gift',
+    src: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&q=85',
+    alt: 'Yara Rose Marshmallow Sweet Scent',
+    tag: 'Feminine Sweet',
+    category: 'Eau de Parfum',
+    slug: 'yara-rose-marshmallow',
   },
   {
-    src: 'https://images.unsplash.com/photo-1556229167-d07a1af7d86f?w=800&q=80',
-    alt: "Rose d'Ivoire",
-    tag: 'Floral',
+    src: 'https://images.unsplash.com/photo-1621243804936-775306a8f2e3?w=800&q=85',
+    alt: 'Black Afgano Concentrated Attar',
+    tag: 'Pure Oil Extrait',
+    category: 'Attars & Oils',
+    slug: 'black-afgano-pure-attar',
   },
   {
-    src: 'https://images.unsplash.com/photo-1541643600914-78b084683702?w=800&q=80',
-    alt: 'Luxury Perfume',
-    tag: 'Collection',
+    src: 'https://images.unsplash.com/photo-1603905219403-0dbe4b64a5c1?w=800&q=85',
+    alt: 'Oud Palace Crystal Scented Candle',
+    tag: 'Home Luxury',
+    category: 'Candles',
+    slug: 'oud-palace-crystal-candle',
   },
   {
-    src: 'https://images.unsplash.com/photo-1563170351-be54b573ab31?w=800&q=80',
-    alt: 'Velvet Rose Mist',
-    tag: 'Body Mist',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1610461888750-10bfc601b4a6?w=800&q=80',
-    alt: 'Amber Royale',
-    tag: 'Attar',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1604975701397-6365ccbd028a?w=800&q=80',
-    alt: 'Rose Garden Candle',
-    tag: 'Candle',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1584553421349-3557471bed79?w=800&q=80',
-    alt: 'Fragrance Bottle',
-    tag: 'Eau de Parfum',
+    src: 'https://images.unsplash.com/photo-1563170351-be54b573ab31?w=800&q=85',
+    alt: 'Rouge 540 Scent Body Elixir Mist',
+    tag: 'Fine Mist',
+    category: 'Body Mists',
+    slug: 'rouge-540-body-mist',
   },
 ]
 
@@ -68,88 +76,109 @@ export default function GalleryPage() {
   const [lightbox, setLightbox] = useState(null)
 
   return (
-    <>
-      {/* Hero */}
-      <section className="relative h-52 flex items-end">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1541643600914-78b084683702?w=1400&q=80')",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/60 to-dark/20" />
-        <div className="relative section-pad pb-10">
-          <p className="text-gold text-xs tracking-[0.4em] uppercase mb-2">
-            Visual Stories
-          </p>
-          <h1 className="font-playfair text-5xl text-cream">Lookbook</h1>
+    <div className="section-pad py-16">
+      {/* Header */}
+      <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="cyber-badge mb-3">
+          <ShieldCheck className="w-3.5 h-3.5 text-gold-bright" />
+          <span>VERIFIED PHYSICAL STOCKS</span>
         </div>
-      </section>
+        <h1 className="font-syne text-5xl sm:text-6xl font-black text-white mb-3">
+          Stock <span className="text-liquid-gold">Lookbook</span>
+        </h1>
+        <p className="font-cinzel text-gold-light italic text-xl">
+          "Smell as good as you look!"
+        </p>
+        <p className="text-sm text-cream-muted max-w-lg mx-auto mt-3 font-light">
+          High-resolution unboxing shots and authentic flacon previews directly from our inventory vault.
+        </p>
+      </div>
 
-      <div className="section-pad py-16">
-        <div className="text-center mb-12">
-          <p className="text-cream-muted max-w-lg mx-auto">
-            A curated visual journey through the world of Wura Luxe & Scents —
-            where fragrance meets artistry.
-          </p>
-        </div>
-
-        {/* Masonry grid */}
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {galleryImages.map((img, i) => (
-            <button
-              key={i}
-              onClick={() => setLightbox(i)}
-              className="w-full block break-inside-avoid group overflow-hidden relative"
-            >
+      {/* Masonry / Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {galleryImages.map((img, i) => (
+          <motion.div
+            key={i}
+            whileHover={{ y: -6 }}
+            className="glass-panel p-4 rounded-3xl border border-gold/20 hover:border-gold shadow-xl group cursor-pointer"
+            onClick={() => setLightbox(i)}
+          >
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-black mb-4">
               <img
                 src={img.src}
                 alt={img.alt}
                 loading="lazy"
-                className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <div>
-                  <p className="text-gold text-xs tracking-widest uppercase">
-                    {img.tag}
-                  </p>
-                  <p className="text-cream text-sm font-playfair">{img.alt}</p>
-                </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+
+              {/* Tag */}
+              <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md border border-gold/40 px-3 py-1 rounded-full text-[10px] font-space font-extrabold uppercase text-gold-bright">
+                {img.tag}
               </div>
-            </button>
-          ))}
-        </div>
+
+              <div className="absolute bottom-3 right-3 w-8 h-8 rounded-lg bg-black/70 border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                <Eye className="w-4 h-4" />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-space text-gold uppercase tracking-wider block">
+                  {img.category}
+                </span>
+                <h3 className="font-syne font-bold text-white text-sm group-hover:text-gold-bright transition-colors line-clamp-1">
+                  {img.alt}
+                </h3>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      {/* Lightbox */}
-      {lightbox !== null && (
-        <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setLightbox(null)}
-        >
-          <button
-            className="absolute top-4 right-4 text-cream-muted hover:text-white transition-colors"
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {lightbox !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-md"
             onClick={() => setLightbox(null)}
           >
-            <X className="w-8 h-8" />
-          </button>
-          <img
-            src={galleryImages[lightbox].src.replace('w=800', 'w=1200')}
-            alt={galleryImages[lightbox].alt}
-            className="max-w-4xl max-h-[90vh] object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
-            <p className="text-gold text-xs tracking-widest uppercase">
-              {galleryImages[lightbox].tag}
-            </p>
-            <p className="text-cream font-playfair">
-              {galleryImages[lightbox].alt}
-            </p>
-          </div>
-        </div>
-      )}
-    </>
+            <button
+              className="absolute top-6 right-6 text-white hover:text-gold transition-colors p-2 rounded-full bg-white/10"
+              onClick={() => setLightbox(null)}
+            >
+              <X className="w-7 h-7" />
+            </button>
+
+            <div className="max-w-4xl max-h-[85vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+              <img
+                src={galleryImages[lightbox].src}
+                alt={galleryImages[lightbox].alt}
+                className="max-w-full max-h-[70vh] object-contain rounded-2xl border border-gold/40 shadow-2xl"
+              />
+              <div className="text-center mt-4">
+                <span className="text-xs text-gold-bright font-space font-bold uppercase tracking-widest block mb-1">
+                  {galleryImages[lightbox].tag}
+                </span>
+                <h3 className="font-syne text-xl text-white font-bold">
+                  {galleryImages[lightbox].alt}
+                </h3>
+                {galleryImages[lightbox].slug && (
+                  <Link
+                    to={`/product/${galleryImages[lightbox].slug}`}
+                    className="btn-futuristic inline-block mt-3 px-6 py-2.5 rounded-xl text-xs font-bold"
+                  >
+                    Inspect In Vault
+                  </Link>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
