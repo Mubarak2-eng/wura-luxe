@@ -1,11 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-const PROMO_CODES = {
-  WURA10: { discount: 0.10, label: '10% off' },
-  LUXE20: { discount: 0.20, label: '20% off' },
-  GOLD15: { discount: 0.15, label: '15% off' },
+export const PROMO_CODES = {
+  MAMA10: { discount: 0.10, label: '10% off Mama Welcome' },
+  MAMA20: { discount: 0.20, label: '20% off VIP Scent Reward' },
+  SIGNATURE15: { discount: 0.15, label: '15% off Signature Collection' },
 }
+
+export const FREE_SHIPPING_THRESHOLD = 50000
 
 export const useCartStore = create(
   persist(
@@ -14,10 +16,18 @@ export const useCartStore = create(
       promoCode: null,
       promoDiscount: 0,
       shippingCost: 3000,
+      deliveryMethod: 'lagos-standard',
 
-      addItem: (product, volume, quantity = 1) => {
+      setDeliveryMethod: (method, cost) => {
+        set({ deliveryMethod: method, shippingCost: cost })
+      },
+
+      addItem: (product, volume, quantity = 1, priceOverride = null) => {
         const { items } = get()
-        const key = `${product.id}-${volume}`
+        const selectedVolume = volume || (product.volumes && product.volumes[0]) || 'Standard'
+        const unitPrice = priceOverride !== null ? priceOverride : (product.sizePrices?.[selectedVolume] || product.price)
+        const key = `${product.id}-${selectedVolume}`
+        
         const existing = items.find((i) => i.key === key)
         if (existing) {
           set({
@@ -33,11 +43,13 @@ export const useCartStore = create(
                 key,
                 productId: product.id,
                 name: product.name,
-                price: product.price,
+                subtitle: product.subtitle || '',
+                price: unitPrice,
                 image: product.images[0],
-                volume,
+                volume: selectedVolume,
                 slug: product.slug,
                 quantity,
+                category: product.category,
               },
             ],
           })
@@ -70,18 +82,18 @@ export const useCartStore = create(
           return { success: true, message: `Promo applied: ${promo.label}` }
         }
         set({ promoCode: null, promoDiscount: 0 })
-        return { success: false, message: 'Invalid promo code' }
+        return { success: false, message: 'Invalid or expired promotional code' }
       },
 
       removePromo: () => set({ promoCode: null, promoDiscount: 0 }),
     }),
     {
-      name: 'wura-cart',
+      name: 'mama-fragrance-cart',
     }
   )
 )
 
-// ── Standalone selector helpers (call these outside of Zustand state) ──
+// ── Standalone selector helpers ──────────────────────────────────────────────
 
 export const getCartSubtotal = (items) =>
   items.reduce((acc, i) => acc + i.price * i.quantity, 0)
@@ -89,10 +101,20 @@ export const getCartSubtotal = (items) =>
 export const getCartDiscount = (items, promoDiscount) =>
   Math.round(getCartSubtotal(items) * promoDiscount)
 
+export const getCartShipping = (items, baseShippingCost = 3000) => {
+  const sub = getCartSubtotal(items)
+  if (items.length === 0) return 0
+  if (sub >= FREE_SHIPPING_THRESHOLD && baseShippingCost === 3000) {
+    return 0 // Free standard delivery threshold met!
+  }
+  return baseShippingCost
+}
+
 export const getCartTotal = (items, promoDiscount, shippingCost) => {
   const sub = getCartSubtotal(items)
   const disc = getCartDiscount(items, promoDiscount)
-  return sub - disc + (items.length > 0 ? shippingCost : 0)
+  const ship = getCartShipping(items, shippingCost)
+  return sub - disc + ship
 }
 
 export const getCartItemCount = (items) =>

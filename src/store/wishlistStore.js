@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 export const useWishlistStore = create(
   persist(
     (set, get) => ({
-      items: [], // array of product IDs
+      items: ['shiyaaka-gold', 'soiree-cloud-candy-combo'], // array of product IDs
 
       add: (productId) => {
         if (!get().items.includes(productId)) {
@@ -32,7 +32,7 @@ export const useWishlistStore = create(
       clear: () => set({ items: [] }),
     }),
     {
-      name: 'wura-wishlist',
+      name: 'mama-fragrance-wishlist',
     }
   )
 )

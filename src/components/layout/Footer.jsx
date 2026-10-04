@@ -1,164 +1,247 @@
 import { Link } from 'react-router-dom'
-import { Instagram, Twitter, Facebook, Mail, MapPin, Phone, Sparkles, MessageCircle } from 'lucide-react'
-import { whatsAppChatLink } from '../../utils/whatsapp'
+import {
+  MessageCircle,
+  Instagram,
+  Facebook,
+  Sparkles,
+  Phone,
+  Mail,
+  MapPin,
+  ShieldCheck,
+  CreditCard,
+  Truck,
+  ArrowRight,
+} from 'lucide-react'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative bg-[#020204] border-t border-gold/20 pt-20 pb-12 overflow-hidden text-cream-soft">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-gold-bright to-transparent shadow-[0_0_20px_#ffd700]" />
-      
-      <div className="section-pad grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16 relative z-10">
-        
-        {/* Brand Column */}
-        <div className="lg:col-span-2 flex flex-col items-start">
-          <Link to="/" className="flex items-center gap-3 group mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-bright to-gold-dark p-[1px]">
-              <div className="w-full h-full bg-[#07070b] rounded-[11px] flex items-center justify-center">
-                <span className="font-cinzel text-lg font-black text-gold-bright">M</span>
-              </div>
+    <footer className="bg-[#211713] text-[#FAF6EF] border-t border-[#31231D]">
+      {/* Top Value Assurance Bar */}
+      <div className="border-b border-[#31231D] py-8">
+        <div className="section-pad grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#FAF6EF]/10 flex items-center justify-center text-[#C7A66A] shrink-0">
+              <ShieldCheck className="w-5 h-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-syne text-xl font-black text-white tracking-tight">
-                MAMA <span className="text-liquid-gold">FRAGRANCE</span>
-              </span>
-              <span className="text-[9px] tracking-[0.3em] text-gold/80 uppercase font-space">
-                Smell as good as you look!
-              </span>
+            <div>
+              <p className="font-serif font-bold text-xs sm:text-sm text-[#FAF6EF]">100% Authentic</p>
+              <p className="text-[11px] text-[#E9DED0]/70">Directly sourced luxury</p>
             </div>
-          </Link>
+          </div>
 
-          <p className="text-sm text-cream-muted leading-relaxed max-w-sm mb-6 font-light">
-            Curating rare Arabian flacons, French niche extraits, and viral fragrance layering combinations with verified authenticity and beast-mode longevity.
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#FAF6EF]/10 flex items-center justify-center text-[#C7A66A] shrink-0">
+              <Truck className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-serif font-bold text-xs sm:text-sm text-[#FAF6EF]">Nationwide Delivery</p>
+              <p className="text-[11px] text-[#E9DED0]/70">Fast Lagos &amp; Interstate</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#FAF6EF]/10 flex items-center justify-center text-[#C7A66A] shrink-0">
+              <MessageCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-serif font-bold text-xs sm:text-sm text-[#FAF6EF]">Direct WhatsApp</p>
+              <p className="text-[11px] text-[#E9DED0]/70">Scent advice &amp; order help</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#FAF6EF]/10 flex items-center justify-center text-[#C7A66A] shrink-0">
+              <CreditCard className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-serif font-bold text-xs sm:text-sm text-[#FAF6EF]">Secure Checkout</p>
+              <p className="text-[11px] text-[#E9DED0]/70">Powered by Paystack</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer Links */}
+      <div className="section-pad py-14 sm:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8">
+          
+          {/* Col 1: Brand & Contact Info */}
+          <div className="lg:col-span-2 space-y-4">
+            <Link to="/" className="inline-block">
+              <span className="font-serif text-2xl font-bold tracking-tight text-[#FAF6EF] block leading-none">
+                MAMA FRAGRANCE
+              </span>
+              <span className="text-[10px] tracking-[0.25em] text-[#C7A66A] uppercase font-sans font-semibold mt-1 block">
+                Smell as good as you look.
+              </span>
+            </Link>
+
+            <p className="text-xs text-[#E9DED0]/80 leading-relaxed font-light max-w-sm">
+              Nigeria's destination for authentic designer perfumes, concentrated Arabian attar oils, luxury layering sets, and irresistible body mists.
+            </p>
+
+            <div className="space-y-2 pt-2 text-xs text-[#E9DED0]/85">
+              <p className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#C7A66A] shrink-0" />
+                <span>Lagos, Nigeria</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-[#C7A66A] shrink-0" />
+                <span>+234 812 000 0000 / WhatsApp Concierge</span>
+              </p>
+              <p className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-[#C7A66A] shrink-0" />
+                <span>hello@mamafragrance.ng</span>
+              </p>
+            </div>
+
+            {/* Social Icons */}
+            <div className="flex items-center gap-3 pt-2">
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-[#FAF6EF]/10 hover:bg-[#C7A66A] hover:text-[#211713] text-[#FAF6EF] flex items-center justify-center transition-all"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href="https://wa.me/2348120000000"
+                target="_blank"
+                rel="noreferrer"
+                className="w-9 h-9 rounded-full bg-[#FAF6EF]/10 hover:bg-[#25D366] hover:text-white text-[#FAF6EF] flex items-center justify-center transition-all"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Col 2: Shop Links */}
+          <div>
+            <h4 className="font-serif font-bold text-sm text-[#FAF6EF] uppercase tracking-wider mb-4 pb-1 border-b border-[#31231D]">
+              Shop
+            </h4>
+            <ul className="space-y-2.5 text-xs text-[#E9DED0]/80">
+              <li>
+                <Link to="/shop" className="hover:text-[#C7A66A] transition-colors block">
+                  Shop All Fragrances
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=men" className="hover:text-[#C7A66A] transition-colors block">
+                  Men's Fragrances
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=women" className="hover:text-[#C7A66A] transition-colors block">
+                  Women's Fragrances
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=unisex" className="hover:text-[#C7A66A] transition-colors block">
+                  Unisex Fragrances
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=oil" className="hover:text-[#C7A66A] transition-colors block">
+                  Perfume Oils &amp; Attars
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=mist" className="hover:text-[#C7A66A] transition-colors block">
+                  Body Mists
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop?category=gift" className="hover:text-[#C7A66A] transition-colors block font-semibold text-[#C7A66A]">
+                  Gift Sets &amp; Duos
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 3: Customer Care */}
+          <div>
+            <h4 className="font-serif font-bold text-sm text-[#FAF6EF] uppercase tracking-wider mb-4 pb-1 border-b border-[#31231D]">
+              Customer Care
+            </h4>
+            <ul className="space-y-2.5 text-xs text-[#E9DED0]/80">
+              <li>
+                <Link to="/contact" className="hover:text-[#C7A66A] transition-colors block">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact#faqs" className="hover:text-[#C7A66A] transition-colors block">
+                  Frequently Asked Questions
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact#shipping" className="hover:text-[#C7A66A] transition-colors block">
+                  Shipping &amp; Delivery Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact#returns" className="hover:text-[#C7A66A] transition-colors block">
+                  Returns &amp; Exchanges
+                </Link>
+              </li>
+              <li>
+                <Link to="/account/orders" className="hover:text-[#C7A66A] transition-colors block">
+                  Order Tracking &amp; History
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Col 4: About & Legal */}
+          <div>
+            <h4 className="font-serif font-bold text-sm text-[#FAF6EF] uppercase tracking-wider mb-4 pb-1 border-b border-[#31231D]">
+              About
+            </h4>
+            <ul className="space-y-2.5 text-xs text-[#E9DED0]/80">
+              <li>
+                <Link to="/about" className="hover:text-[#C7A66A] transition-colors block">
+                  Our Story
+                </Link>
+              </li>
+              <li>
+                <Link to="/about#why" className="hover:text-[#C7A66A] transition-colors block">
+                  Why Mama Fragrance
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact#privacy" className="hover:text-[#C7A66A] transition-colors block">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact#terms" className="hover:text-[#C7A66A] transition-colors block">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Copyright & Payment Methods */}
+      <div className="border-t border-[#31231D] py-6">
+        <div className="section-pad flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#E9DED0]/60 text-center sm:text-left">
+          <p>
+            &copy; {currentYear} <strong>Mama Fragrance</strong>. All rights reserved. “Smell as good as you look.”
           </p>
 
           <div className="flex items-center gap-3">
-            {[
-              { icon: Instagram, href: 'https://instagram.com' },
-              { icon: Facebook, href: 'https://facebook.com' },
-              { icon: Twitter, href: 'https://twitter.com' },
-            ].map(({ icon: Icon, href }, i) => (
-              <a
-                key={i}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-cream-soft hover:text-gold-bright hover:border-gold/40 hover:bg-gold/10 transition-all"
-              >
-                <Icon className="w-4 h-4" />
-              </a>
-            ))}
-            <a
-              href={whatsAppChatLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2.5 rounded-xl bg-[#25D366]/15 border border-[#25D366]/40 text-[#25D366] text-xs font-bold font-space flex items-center gap-2 hover:bg-[#25D366] hover:text-black transition-all"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-              <span>WhatsApp VIP</span>
-            </a>
+            <span className="text-[11px] text-[#E9DED0]/80">Accepted Payments:</span>
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-[#FAF6EF] uppercase bg-[#FAF6EF]/10 px-2.5 py-1 rounded">
+              <span>Paystack</span> • <span>Mastercard</span> • <span>Visa</span> • <span>Verve</span> • <span>Bank Transfer</span>
+            </div>
           </div>
-        </div>
-
-        {/* Quick Links */}
-        <div>
-          <h4 className="font-syne text-sm font-extrabold tracking-widest uppercase text-white mb-5">
-            The Vault
-          </h4>
-          <ul className="flex flex-col gap-3 text-xs font-medium text-cream-muted">
-            <li>
-              <Link to="/shop" className="hover:text-gold-bright transition-colors">
-                All Fragrances (20+)
-              </Link>
-            </li>
-            <li>
-              <Link to="/shop?category=edp" className="hover:text-gold-bright transition-colors">
-                Eau de Parfum Flacons
-              </Link>
-            </li>
-            <li>
-              <Link to="/shop?category=gift" className="hover:text-gold-bright transition-colors">
-                Viral Layering Duos
-              </Link>
-            </li>
-            <li>
-              <Link to="/shop?category=oil" className="hover:text-gold-bright transition-colors">
-                Concentrated Attars
-              </Link>
-            </li>
-            <li>
-              <Link to="/shop?category=mist" className="hover:text-gold-bright transition-colors">
-                Fine Body Mists
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Brand & Story */}
-        <div>
-          <h4 className="font-syne text-sm font-extrabold tracking-widest uppercase text-white mb-5">
-            Discovery
-          </h4>
-          <ul className="flex flex-col gap-3 text-xs font-medium text-cream-muted">
-            <li>
-              <Link to="/gallery" className="hover:text-gold-bright transition-colors">
-                Real Stock Lookbook
-              </Link>
-            </li>
-            <li>
-              <Link to="/about" className="hover:text-gold-bright transition-colors">
-                About Mama Fragrance
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" className="hover:text-gold-bright transition-colors">
-                Contact VIP Concierge
-              </Link>
-            </li>
-            <li>
-              <Link to="/account/wishlist" className="hover:text-gold-bright transition-colors">
-                Saved Scent Vault
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Contact Info */}
-        <div>
-          <h4 className="font-syne text-sm font-extrabold tracking-widest uppercase text-white mb-5">
-            Direct Concierge
-          </h4>
-          <ul className="flex flex-col gap-3.5 text-xs text-cream-muted">
-            <li className="flex items-start gap-2.5">
-              <MapPin className="w-4 h-4 text-gold-bright shrink-0 mt-0.5" />
-              <span>Lagos & Nationwide Delivery, Nigeria</span>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Phone className="w-4 h-4 text-gold-bright shrink-0" />
-              <a href="tel:+2348000000000" className="hover:text-gold-bright transition-colors">
-                +234 800 000 0000
-              </a>
-            </li>
-            <li className="flex items-center gap-2.5">
-              <Mail className="w-4 h-4 text-gold-bright shrink-0" />
-              <a href="mailto:hello@mamafragrance.com" className="hover:text-gold-bright transition-colors">
-                hello@mamafragrance.com
-              </a>
-            </li>
-          </ul>
-        </div>
-
-      </div>
-
-      {/* Bottom Sub-bar */}
-      <div className="section-pad pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-cream-muted font-space">
-        <p>© {currentYear} Mama Fragrance. All rights reserved. "Smell as good as you look!"</p>
-        <div className="flex items-center gap-6">
-          <span className="text-gold-bright">100% Genuine Guaranteed</span>
-          <span>•</span>
-          <span>Fast Nationwide Shipping</span>
         </div>
       </div>
     </footer>

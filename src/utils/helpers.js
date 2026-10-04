@@ -1,7 +1,8 @@
 /**
- * Format a price in Naira
+ * Format a price in Nigerian Naira (₦)
  */
 export const formatPrice = (amount) => {
+  if (typeof amount !== 'number' || isNaN(amount)) return '₦0'
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
@@ -11,7 +12,7 @@ export const formatPrice = (amount) => {
 }
 
 /**
- * Calculate discount percentage
+ * Calculate genuine discount percentage
  */
 export const discountPercent = (original, sale) => {
   if (!original || original <= sale) return 0
@@ -30,6 +31,7 @@ export const truncate = (text, maxLength = 100) => {
  * Format date string to readable format
  */
 export const formatDate = (dateString) => {
+  if (!dateString) return ''
   return new Intl.DateTimeFormat('en-NG', {
     year: 'numeric',
     month: 'long',
@@ -38,10 +40,11 @@ export const formatDate = (dateString) => {
 }
 
 /**
- * Generate a simple order number
+ * Generate a Mama Fragrance order tracking number (e.g., MF-98241)
  */
 export const generateOrderNumber = () => {
-  return 'WLS-' + Date.now().toString(36).toUpperCase()
+  const randomDigits = Math.floor(10000 + Math.random() * 90000)
+  return `MF-${randomDigits}`
 }
 
 /**

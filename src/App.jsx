@@ -61,14 +61,15 @@ export default function App() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: '#1a1a1a',
-            color: '#f5f0e8',
-            border: '1px solid #2a2520',
-            fontFamily: 'Inter, sans-serif',
+            background: '#FAF6EF',
+            color: '#211713',
+            border: '1px solid #E9DED0',
+            fontFamily: 'Inter, Plus Jakarta Sans, sans-serif',
             fontSize: '14px',
+            boxShadow: '0 4px 24px rgba(33,23,19,0.10)',
           },
           success: {
-            iconTheme: { primary: '#c9a84c', secondary: '#0a0a0a' },
+            iconTheme: { primary: '#C7A66A', secondary: '#FAF6EF' },
           },
         }}
       />
