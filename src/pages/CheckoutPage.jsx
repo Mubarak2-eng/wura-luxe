@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   CheckCircle,
-  ShieldCheck,
-  Sparkles,
+  MessageCircle,
+  MapPin,
   Truck,
-  Lock,
-  CreditCard,
-  Building2,
-  Phone,
   ChevronRight,
-  ArrowRight,
-  HelpCircle,
+  ShoppingBag,
+  Phone,
+  User,
+  FileText,
+  Send,
+  ChevronDown,
 } from 'lucide-react'
 import {
   useCartStore,
@@ -19,15 +19,16 @@ import {
   getCartDiscount,
   getCartShipping,
   getCartTotal,
-  FREE_SHIPPING_THRESHOLD,
 } from '../store/cartStore'
 import { useAuthStore } from '../store/authStore'
-import { formatPrice, generateOrderNumber } from '../utils/helpers'
-import { whatsAppOrderLink } from '../utils/whatsapp'
-import confetti from 'canvas-confetti'
+import { generateOrderNumber } from '../utils/helpers'
+import { whatsAppInvoiceLink } from '../utils/whatsapp'
 import toast from 'react-hot-toast'
 
+const WHATSAPP_DISPLAY = '+234 706 416 0841'
+
 const nigerianStates = [
+  'Bayelsa',
   'Lagos State',
   'FCT - Abuja',
   'Rivers State',
@@ -38,7 +39,6 @@ const nigerianStates = [
   'Akwa Ibom',
   'Anambra',
   'Bauchi',
-  'Bayelsa',
   'Benue',
   'Borno',
   'Cross River',
@@ -58,8 +58,6 @@ const nigerianStates = [
   'Kwara',
   'Nasarawa',
   'Niger',
-  'Ondo',
-  'Osun',
   'Plateau',
   'Sokoto',
   'Taraba',
@@ -69,702 +67,545 @@ const nigerianStates = [
 
 const deliveryOptions = [
   {
-    id: 'lagos-standard',
-    title: 'Standard Lagos Delivery',
-    time: '1–2 Business Days',
-    price: 3000,
-    forLagos: true,
+    id: 'standard',
+    label: 'Standard Delivery',
+    desc: 'Bayelsa / Yenagoa — 1–2 business days',
+    price: 2000,
+    icon: '🏠',
   },
   {
-    id: 'lagos-express',
-    title: 'Express Same-Day Lagos Delivery',
-    time: 'Delivered in 4–8 Hours',
-    price: 5000,
-    forLagos: true,
+    id: 'express',
+    label: 'Express Delivery',
+    desc: 'Same-day or next day (Yenagoa only)',
+    price: 4000,
+    icon: '⚡',
   },
   {
-    id: 'interstate-courier',
-    title: 'Nationwide Interstate Courier',
-    time: '2–4 Business Days (Abuja, PH, Ibadan, etc.)',
-    price: 6000,
-    forLagos: false,
+    id: 'interstate',
+    label: 'Nationwide Delivery',
+    desc: 'Outside Bayelsa — 2–5 business days',
+    price: 5500,
+    icon: '🚚',
+  },
+  {
+    id: 'pickup',
+    label: 'Store Pickup',
+    desc: 'Magnate Plaza, Baybridge Rd, Yenagoa',
+    price: 0,
+    icon: '🏬',
   },
 ]
 
+const inputClass =
+  'w-full px-4 py-3 bg-[#FAF6EF] border border-[#E9DED0] rounded-lg text-sm text-[#211713] placeholder:text-[#B0A89E] focus:outline-none focus:border-[#C7A66A] focus:ring-1 focus:ring-[#C7A66A]/20 transition-colors'
+
 export default function CheckoutPage() {
   const navigate = useNavigate()
+  const { items, appliedPromo, clearCart } = useCartStore()
+  const { user } = useAuthStore()
+  const addOrder = useAuthStore((s) => s.addOrder)
 
-  const { items, promoDiscount, clearCart } = useCartStore()
-  const { addOrder: saveOrder, user } = useAuthStore()
-
-  const [deliveryMethod, setDeliveryMethod] = useState('lagos-standard')
-  const [paymentMethod, setPaymentMethod] = useState('paystack') // 'paystack' | 'bank-transfer' | 'cod'
-
-  // Selected delivery option
-  const activeDeliveryOption =
-    deliveryOptions.find((d) => d.id === deliveryMethod) || deliveryOptions[0]
-  const baseShippingCost = activeDeliveryOption.price
-
-  const subtotal = getCartSubtotal(items)
-  const discount = getCartDiscount(items, promoDiscount)
-  const shipping = getCartShipping(items, baseShippingCost)
-  const total = getCartTotal(items, promoDiscount, baseShippingCost)
-
-  const [loading, setLoading] = useState(false)
-  const [orderPlaced, setOrderPlaced] = useState(false)
-  const [orderNumber, setOrderNumber] = useState('')
-  const [savedOrderData, setSavedOrderData] = useState(null)
-  const [showPaystackModal, setShowPaystackModal] = useState(false)
-
+  const [step, setStep] = useState(1) // 1 = details, 2 = preview invoice, 3 = done
+  const [delivery, setDelivery] = useState('standard')
   const [form, setForm] = useState({
-    firstName: user?.name?.split(' ')[0] || '',
-    lastName: user?.name?.split(' ').slice(1).join(' ') || '',
-    email: user?.email || '',
+    name: user?.name || '',
     phone: user?.phone || '',
+    email: user?.email || '',
     address: user?.address || '',
     city: user?.city || '',
-    state: user?.state || 'Lagos State',
-    orderNotes: '',
+    state: user?.state || 'Bayelsa',
+    notes: '',
   })
-  const [errors, setErrors] = useState({})
 
-  const validate = () => {
-    const e = {}
-    if (!form.firstName.trim()) e.firstName = 'First name is required'
-    if (!form.lastName.trim()) e.lastName = 'Last name is required'
-    if (!form.email || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email is required'
-    if (!form.phone.trim()) e.phone = 'Phone number is required'
-    if (!form.address.trim()) e.address = 'Street address is required'
-    if (!form.city.trim()) e.city = 'City/Area is required'
-    if (!form.state) e.state = 'Please select a state'
-    return e
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  if (items.length === 0 && step !== 3) {
+    return (
+      <div className="bg-[#FAF6EF] min-h-screen flex items-center justify-center p-8 text-center">
+        <div>
+          <ShoppingBag className="w-12 h-12 text-[#E9DED0] mx-auto mb-4" />
+          <h2 className="font-serif text-2xl font-bold text-[#211713] mb-2">Your cart is empty</h2>
+          <p className="text-sm text-[#7A726C] mb-6">Add some fragrances before checking out.</p>
+          <Link to="/shop" className="btn-espresso px-8 py-3 text-xs font-bold rounded">
+            EXPLORE FRAGRANCES
+          </Link>
+        </div>
+      </div>
+    )
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
+  const selectedDelivery = deliveryOptions.find((d) => d.id === delivery)
+  const subtotal = getCartSubtotal(items)
+  const discount = getCartDiscount(items, appliedPromo)
+  const shipping = delivery === 'pickup' ? 0 : (selectedDelivery?.price ?? 0)
+  const total = subtotal - discount + shipping
 
-    // Auto update delivery method based on state
-    if (name === 'state') {
-      if (value === 'Lagos State') {
-        setDeliveryMethod('lagos-standard')
-      } else {
-        setDeliveryMethod('interstate-courier')
-      }
-    }
-  }
-
-  const handleProcessOrder = async (isPaid = false) => {
-    setLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
-
-    const num = generateOrderNumber()
-    setOrderNumber(num)
-
-    const orderRecord = {
-      id: num,
-      orderNumber: num,
-      items: [...items],
-      subtotal,
-      discount,
-      shipping,
-      total,
-      address: `${form.address}, ${form.city}, ${form.state}`,
-      customer: form,
-      paymentMethod:
-        paymentMethod === 'paystack'
-          ? 'Paystack Online (Card/USSD/Transfer)'
-          : paymentMethod === 'bank-transfer'
-          ? 'Direct Bank Transfer'
-          : 'Payment on Delivery (Lagos)',
-      paymentStatus: isPaid || paymentMethod === 'paystack' ? 'Paid' : 'Pending Verification',
-      status: 'Processing',
-      createdAt: new Date().toISOString(),
-      timeline: [
-        { title: 'Order Confirmed', time: 'Just now', done: true },
-        { title: 'Preparing Fragrance Packaging', time: 'Pending', done: false },
-        { title: 'Courier Dispatch', time: 'Pending', done: false },
-        { title: 'Delivered', time: 'Pending', done: false },
-      ],
-    }
-
-    setSavedOrderData(orderRecord)
-    saveOrder(orderRecord)
-    clearCart()
-    setOrderPlaced(true)
-    setLoading(false)
-    setShowPaystackModal(false)
-
-    try {
-      confetti({
-        particleCount: 120,
-        spread: 90,
-        origin: { y: 0.6 },
-        colors: ['#C7A66A', '#211713', '#E9DED0'],
-      })
-    } catch (_) {}
-
-    toast.success('Order Successfully Placed with Mama Fragrance!')
-  }
+  const orderNumber = generateOrderNumber()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const errs = validate()
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs)
-      toast.error('Please fill in all required shipping details')
+    if (!form.name || !form.phone || !form.address) {
+      toast.error('Please fill in your name, phone, and delivery address.')
       return
     }
-
-    if (paymentMethod === 'paystack') {
-      // Trigger Paystack flow
-      setShowPaystackModal(true)
-    } else {
-      handleProcessOrder(false)
-    }
+    setStep(2)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  if (items.length === 0 && !orderPlaced) {
-    return (
-      <div className="section-pad py-24 text-center">
-        <h2 className="font-serif text-3xl font-bold text-[#211713] mb-2">
-          Your fragrance bag is empty
-        </h2>
-        <p className="text-sm text-[#7A726C] mb-6">
-          Add items to your cart before proceeding to checkout.
-        </p>
-        <Link to="/shop" className="btn-espresso px-8 py-3.5 text-xs font-bold rounded">
-          Browse Perfume Vault
-        </Link>
-      </div>
-    )
+  const handleSendInvoice = () => {
+    const link = whatsAppInvoiceLink({
+      orderNumber,
+      customerName: form.name,
+      phone: form.phone,
+      address: form.address,
+      city: form.city,
+      state: form.state,
+      items,
+      subtotal,
+      shipping,
+      discount,
+      total,
+      deliveryMethod: selectedDelivery?.label,
+    })
+
+    // Save order to auth store
+    addOrder?.({
+      id: orderNumber,
+      createdAt: new Date().toISOString(),
+      items: items.map((item) => ({
+        name: item.name,
+        volume: item.volume,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      })),
+      total,
+      status: 'Processing',
+      paymentMethod: 'Pay via WhatsApp',
+      paymentStatus: 'Pending',
+      shippingAddress: `${form.address}, ${form.city}, ${form.state}`,
+      timeline: [
+        { title: 'Invoice Sent via WhatsApp', time: new Date().toLocaleString('en-NG'), done: true },
+        { title: 'Order Confirmed by Store', time: '', done: false },
+        { title: 'Dispatched', time: '', done: false },
+        { title: 'Delivered', time: '', done: false },
+      ],
+    })
+
+    clearCart()
+    setStep(3)
+    window.open(link, '_blank')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // ── Successful Order Screen ──
-  if (orderPlaced) {
+  // ── STEP 3: Confirmation ────────────────────────────────────────────────────
+  if (step === 3) {
     return (
-      <div className="section-pad py-16 sm:py-24 max-w-2xl mx-auto">
-        <div className="bg-white p-8 sm:p-12 rounded-2xl border border-[#E9DED0] shadow-luxury text-center space-y-6">
-          
-          <div className="w-20 h-20 rounded-full bg-[#FAF6EF] border-2 border-[#C7A66A] flex items-center justify-center mx-auto text-[#C7A66A]">
-            <CheckCircle className="w-10 h-10" />
+      <div className="bg-[#FAF6EF] min-h-screen flex items-center justify-center py-20 px-4">
+        <div className="max-w-lg w-full text-center space-y-5">
+          <div className="w-20 h-20 bg-[#25D366]/10 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle className="w-10 h-10 text-[#25D366]" />
           </div>
 
           <div>
-            <span className="text-xs uppercase font-bold tracking-[0.2em] text-[#C7A66A] block mb-1">
-              THANK YOU FOR YOUR ORDER
-            </span>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#211713]">
-              Order Confirmed!
+            <p className="text-xs font-bold uppercase tracking-widest text-[#C7A66A] mb-1">Invoice Sent</p>
+            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#211713] leading-tight">
+              Your order is on its way!
             </h1>
-            <p className="font-serif italic text-base text-[#C7A66A] mt-1">
-              “Smell as good as you look.”
-            </p>
           </div>
 
-          {/* Receipt Details Card */}
-          <div className="bg-[#FCFAF6] p-6 rounded-xl border border-[#E9DED0] text-left text-xs space-y-3">
-            <div className="flex justify-between border-b border-[#E9DED0] pb-2">
-              <span className="text-[#7A726C]">Tracking ID:</span>
-              <strong className="font-mono text-sm text-[#211713]">{orderNumber}</strong>
+          <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-6 text-left space-y-3 text-sm">
+            <div className="flex items-center gap-2 text-[#211713] font-bold font-serif border-b border-[#E9DED0] pb-3 mb-3">
+              <FileText className="w-4 h-4 text-[#C7A66A]" />
+              <span>Order #{orderNumber}</span>
             </div>
-            <div className="flex justify-between border-b border-[#E9DED0] pb-2">
-              <span className="text-[#7A726C]">Recipient Name:</span>
-              <strong className="text-[#211713]">{form.firstName} {form.lastName}</strong>
-            </div>
-            <div className="flex justify-between border-b border-[#E9DED0] pb-2">
-              <span className="text-[#7A726C]">Delivery Address:</span>
-              <span className="text-[#211713] font-medium text-right max-w-xs truncate">
-                {form.address}, {form.city}, {form.state}
-              </span>
-            </div>
-            <div className="flex justify-between border-b border-[#E9DED0] pb-2">
-              <span className="text-[#7A726C]">Payment Method:</span>
-              <strong className="text-[#211713]">{savedOrderData?.paymentMethod}</strong>
-            </div>
-            <div className="flex justify-between pt-1 text-sm font-bold">
-              <span>Total Amount Paid / Payable:</span>
-              <span className="text-[#211713]">{formatPrice(savedOrderData?.total || total)}</span>
-            </div>
-          </div>
-
-          {/* Bank Transfer Instructions if Selected */}
-          {paymentMethod === 'bank-transfer' && (
-            <div className="bg-[#FAF6EF] p-5 rounded-xl border border-[#C7A66A]/50 text-left text-xs space-y-2">
-              <h4 className="font-serif font-bold text-sm text-[#211713]">
-                Mama Fragrance Official Bank Details
-              </h4>
-              <p className="text-[#7A726C]">
-                Please transfer <strong>{formatPrice(savedOrderData?.total || total)}</strong> to:
+            <div className="flex items-start gap-2 text-[#393431]">
+              <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0 mt-0.5" />
+              <p className="text-xs leading-relaxed">
+                Your invoice has been opened in WhatsApp ready to send to <strong>{WHATSAPP_DISPLAY}</strong>. Please tap <strong>Send</strong> in WhatsApp if it hasn't sent yet.
               </p>
-              <div className="space-y-1 font-mono text-[#211713] bg-white p-3 rounded border border-[#E9DED0]">
-                <p><strong>Bank:</strong> GTBank / Providus Bank</p>
-                <p><strong>Account Name:</strong> Mama Fragrance Scents Nig Ltd</p>
-                <p><strong>Account Number:</strong> 0123456789</p>
-                <p><strong>Payment Reference:</strong> {orderNumber}</p>
-              </div>
             </div>
-          )}
+            <div className="flex items-start gap-2 text-[#393431]">
+              <Phone className="w-4 h-4 text-[#C7A66A] shrink-0 mt-0.5" />
+              <p className="text-xs leading-relaxed">
+                We'll confirm your order and share payment details as soon as we receive your message.
+              </p>
+            </div>
+            <div className="flex items-start gap-2 text-[#393431]">
+              <MapPin className="w-4 h-4 text-[#C7A66A] shrink-0 mt-0.5" />
+              <p className="text-xs leading-relaxed">
+                <strong>Store:</strong> Magnate Plaza, Baybridge Road, Yenagoa, Bayelsa
+              </p>
+            </div>
+          </div>
 
-          <p className="text-xs text-[#7A726C] leading-relaxed max-w-md mx-auto">
-            A confirmation receipt has been sent to <strong>{form.email}</strong>. Our team is carefully packing your authentic fragrance flacons for fast dispatch.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Link to="/shop" className="btn-espresso px-8 py-3.5 text-xs font-bold rounded">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <a
+              href={`https://wa.me/2347064160841`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex-1 btn-espresso py-3.5 text-xs font-bold rounded flex items-center justify-center gap-2"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Open WhatsApp Again
+            </a>
+            <Link
+              to="/shop"
+              className="flex-1 btn-outline-espresso py-3.5 text-xs font-bold rounded flex items-center justify-center gap-2"
+            >
+              <ShoppingBag className="w-4 h-4" />
               Continue Shopping
             </Link>
-            <a
-              href={whatsAppOrderLink(savedOrderData?.items || [], savedOrderData?.total || total)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-champagne px-6 py-3.5 text-xs font-bold rounded flex items-center justify-center gap-2"
-            >
-              <span>Confirm on WhatsApp</span>
-            </a>
           </div>
         </div>
       </div>
     )
   }
 
-  return (
-    <div className="bg-[#FAF6EF] min-h-screen pb-20">
-      
-      {/* Breadcrumb */}
-      <div className="border-b border-[#E9DED0] bg-[#FCFAF6] py-3.5">
-        <div className="section-pad flex items-center gap-2 text-xs text-[#7A726C]">
-          <Link to="/" className="hover:text-[#211713] transition-colors">
-            Home
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <Link to="/cart" className="hover:text-[#211713] transition-colors">
-            Bag
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-[#211713] font-semibold">Secure Checkout</span>
-        </div>
-      </div>
+  // ── STEP 2: Invoice Preview ─────────────────────────────────────────────────
+  if (step === 2) {
+    return (
+      <div className="bg-[#FAF6EF] min-h-screen py-12 px-4">
+        <div className="max-w-2xl mx-auto space-y-5">
 
-      <div className="section-pad py-10 sm:py-14">
-        
-        {/* Page Title */}
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-[#C7A66A] mb-2">
-            <Lock className="w-3.5 h-3.5" />
-            <span>256-BIT ENCRYPTED CHECKOUT</span>
+          <div className="text-center mb-6">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#C7A66A] mb-1">Step 2 of 2</p>
+            <h1 className="font-serif text-3xl font-bold text-[#211713]">Review Your Invoice</h1>
+            <p className="text-sm text-[#7A726C] mt-1">
+              Confirm the details below, then tap <strong>"Send Invoice on WhatsApp"</strong>.
+            </p>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#211713]">
-            Delivery &amp; Payment
-          </h1>
-        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            
-            {/* ── Left: Shipping & Payment Form (8 cols) ── */}
-            <div className="lg:col-span-8 space-y-8">
-              
-              {/* 1. Customer Information Card */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E9DED0] shadow-sm space-y-6">
-                <h3 className="font-serif text-lg font-bold text-[#211713] pb-3 border-b border-[#E9DED0]">
-                  1. Contact Information
-                </h3>
+          {/* Invoice card */}
+          <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm overflow-hidden">
+            {/* Invoice header */}
+            <div className="bg-[#211713] text-[#FAF6EF] px-6 py-5 flex items-center justify-between">
+              <div>
+                <p className="font-serif text-lg font-bold tracking-wider">MAMA FRAGRANCE</p>
+                <p className="text-[10px] tracking-[0.2em] text-[#C7A66A] uppercase mt-0.5">Order Invoice</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] text-[#E9DED0]/70 uppercase tracking-wider">Reference</p>
+                <p className="font-mono text-sm font-bold text-[#C7A66A]">#{orderNumber}</p>
+              </div>
+            </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      First Name *
-                    </label>
-                    <input
-                      name="firstName"
-                      value={form.firstName}
-                      onChange={handleChange}
-                      placeholder="e.g. Amina"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.firstName && <p className="text-[11px] text-red-500 mt-1">{errors.firstName}</p>}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      Last Name *
-                    </label>
-                    <input
-                      name="lastName"
-                      value={form.lastName}
-                      onChange={handleChange}
-                      placeholder="e.g. Adeleke"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.lastName && <p className="text-[11px] text-red-500 mt-1">{errors.lastName}</p>}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="you@domain.com"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.email && <p className="text-[11px] text-red-500 mt-1">{errors.email}</p>}
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      Phone Number (WhatsApp Active) *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={form.phone}
-                      onChange={handleChange}
-                      placeholder="080 1234 5678"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.phone && <p className="text-[11px] text-red-500 mt-1">{errors.phone}</p>}
-                  </div>
+            <div className="p-6 space-y-5">
+              {/* Customer details */}
+              <div className="grid grid-cols-2 gap-4 text-sm border-b border-[#E9DED0] pb-5">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#C7A66A] mb-1">Customer</p>
+                  <p className="font-semibold text-[#211713]">{form.name}</p>
+                  <p className="text-[#7A726C] text-xs">{form.phone}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#C7A66A] mb-1">Delivery To</p>
+                  <p className="text-xs text-[#393431] leading-relaxed">
+                    {form.address}<br />
+                    {form.city}{form.state ? `, ${form.state}` : ''}
+                  </p>
                 </div>
               </div>
 
-              {/* 2. Delivery Address Card */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E9DED0] shadow-sm space-y-6">
-                <h3 className="font-serif text-lg font-bold text-[#211713] pb-3 border-b border-[#E9DED0]">
-                  2. Delivery Address (Nigeria)
-                </h3>
+              {/* Delivery method */}
+              <div className="flex items-center gap-3 text-sm border-b border-[#E9DED0] pb-5">
+                <Truck className="w-4 h-4 text-[#C7A66A] shrink-0" />
+                <div>
+                  <p className="font-semibold text-[#211713]">{selectedDelivery?.label}</p>
+                  <p className="text-xs text-[#7A726C]">{selectedDelivery?.desc}</p>
+                </div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      Street Address &amp; House Number *
-                    </label>
-                    <input
-                      name="address"
-                      value={form.address}
-                      onChange={handleChange}
-                      placeholder="e.g. 14 Admiralty Way, Flat 3B"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.address && <p className="text-[11px] text-red-500 mt-1">{errors.address}</p>}
+              {/* Items */}
+              <div className="space-y-3 border-b border-[#E9DED0] pb-5">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#C7A66A]">Items Ordered</p>
+                {items.map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#E9DED0] bg-[#FAF6EF] shrink-0">
+                      {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#211713] truncate">{item.name}</p>
+                      {item.volume && <p className="text-xs text-[#7A726C]">{item.volume}</p>}
+                      <p className="text-xs text-[#7A726C]">Qty: {item.quantity}</p>
+                    </div>
+                    <p className="text-sm font-bold text-[#211713] shrink-0">
+                      ₦{(item.price * item.quantity).toLocaleString()}
+                    </p>
                   </div>
+                ))}
+              </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      State *
-                    </label>
+              {/* Totals */}
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-[#7A726C]">
+                  <span>Subtotal</span>
+                  <span>₦{subtotal.toLocaleString()}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount ({appliedPromo})</span>
+                    <span>−₦{discount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-[#7A726C]">
+                  <span>Delivery</span>
+                  <span>{shipping === 0 ? 'FREE' : `₦${shipping.toLocaleString()}`}</span>
+                </div>
+                <div className="flex justify-between font-bold text-base text-[#211713] pt-2 border-t border-[#E9DED0]">
+                  <span className="font-serif">Total Due</span>
+                  <span>₦{total.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Notes */}
+              {form.notes && (
+                <div className="bg-[#FAF6EF] rounded-lg p-3 text-xs text-[#393431] border border-[#E9DED0]">
+                  <p className="font-bold text-[#C7A66A] uppercase tracking-wider text-[10px] mb-1">Order Note</p>
+                  <p>{form.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* How payment works */}
+          <div className="bg-[#FAF6EF] border border-[#E9DED0] rounded-xl p-5 space-y-2">
+            <p className="text-xs font-bold text-[#211713] uppercase tracking-wider">How payment works</p>
+            <ol className="text-xs text-[#393431] space-y-1.5 list-none">
+              <li className="flex items-start gap-2"><span className="font-bold text-[#C7A66A] shrink-0">1.</span> Tap the button below to send this invoice on WhatsApp.</li>
+              <li className="flex items-start gap-2"><span className="font-bold text-[#C7A66A] shrink-0">2.</span> We'll confirm your order and send you our account details for transfer.</li>
+              <li className="flex items-start gap-2"><span className="font-bold text-[#C7A66A] shrink-0">3.</span> Send your payment proof and we'll dispatch your fragrances immediately.</li>
+            </ol>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              onClick={() => setStep(1)}
+              className="sm:w-auto btn-outline-espresso px-6 py-3.5 text-xs font-bold rounded"
+            >
+              ← Edit Details
+            </button>
+            <button
+              onClick={handleSendInvoice}
+              className="flex-1 bg-[#25D366] hover:bg-[#1ebe5d] text-white py-3.5 text-sm font-bold rounded flex items-center justify-center gap-2 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              SEND INVOICE ON WHATSAPP
+            </button>
+          </div>
+
+          <p className="text-center text-[11px] text-[#7A726C]">
+            Opens WhatsApp with your invoice pre-filled and ready to send to <strong>{WHATSAPP_DISPLAY}</strong>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // ── STEP 1: Customer Details Form ──────────────────────────────────────────
+  return (
+    <div className="bg-[#FAF6EF] min-h-screen pb-20">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b border-[#E9DED0]">
+        <div className="section-pad py-3 flex items-center gap-2 text-xs text-[#7A726C]">
+          <Link to="/cart" className="hover:text-[#211713]">Cart</Link>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-[#211713] font-semibold">Checkout</span>
+          <ChevronRight className="w-3 h-3 text-[#E9DED0]" />
+          <span className="text-[#B0A89E]">Invoice Preview</span>
+        </div>
+      </div>
+
+      <div className="section-pad py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left — Form */}
+        <div className="lg:col-span-7">
+          <div className="mb-6">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#C7A66A] mb-1">Step 1 of 2</p>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#211713]">Delivery Details</h1>
+            <p className="text-sm text-[#7A726C] mt-1">
+              Fill in your details below and we'll prepare your WhatsApp invoice.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Contact */}
+            <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-5 sm:p-6 space-y-4">
+              <h2 className="font-serif font-bold text-base text-[#211713] flex items-center gap-2">
+                <User className="w-4 h-4 text-[#C7A66A]" />
+                Contact Information
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#393431] mb-1.5">Full Name *</label>
+                  <input name="name" value={form.name} onChange={handleChange} required className={inputClass} placeholder="Your full name" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#393431] mb-1.5">WhatsApp / Phone *</label>
+                  <input name="phone" type="tel" value={form.phone} onChange={handleChange} required className={inputClass} placeholder="+234 800 000 0000" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#393431] mb-1.5">Email (optional)</label>
+                <input name="email" type="email" value={form.email} onChange={handleChange} className={inputClass} placeholder="you@example.com" />
+              </div>
+            </div>
+
+            {/* Delivery address */}
+            <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-5 sm:p-6 space-y-4">
+              <h2 className="font-serif font-bold text-base text-[#211713] flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[#C7A66A]" />
+                Delivery Address
+              </h2>
+              <div>
+                <label className="block text-xs font-semibold text-[#393431] mb-1.5">Street Address *</label>
+                <input name="address" value={form.address} onChange={handleChange} required className={inputClass} placeholder="House / flat number and street name" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#393431] mb-1.5">City / Town</label>
+                  <input name="city" value={form.city} onChange={handleChange} className={inputClass} placeholder="e.g. Yenagoa" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#393431] mb-1.5">State</label>
+                  <div className="relative">
                     <select
                       name="state"
                       value={form.state}
                       onChange={handleChange}
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
+                      className={`${inputClass} appearance-none pr-8`}
                     >
-                      {nigerianStates.map((st) => (
-                        <option key={st} value={st}>
-                          {st}
-                        </option>
+                      {nigerianStates.map((s) => (
+                        <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#B0A89E]" />
                   </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      City / Area / LGA *
-                    </label>
-                    <input
-                      name="city"
-                      value={form.city}
-                      onChange={handleChange}
-                      placeholder="e.g. Lekki Phase 1 / Ikeja"
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                    {errors.city && <p className="text-[11px] text-red-500 mt-1">{errors.city}</p>}
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-[#211713] block mb-1">
-                      Order Notes / Delivery Directions (Optional)
-                    </label>
-                    <textarea
-                      name="orderNotes"
-                      rows={2}
-                      value={form.orderNotes}
-                      onChange={handleChange}
-                      placeholder="e.g. Call when outside the estate gate or gift message..."
-                      className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded-lg p-3 text-xs text-[#211713] focus:outline-none focus:border-[#C7A66A]"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 3. Delivery Method Selection */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E9DED0] shadow-sm space-y-4">
-                <h3 className="font-serif text-lg font-bold text-[#211713] pb-3 border-b border-[#E9DED0]">
-                  3. Select Delivery Method
-                </h3>
-
-                <div className="space-y-3">
-                  {deliveryOptions.map((opt) => {
-                    const isFree = subtotal >= FREE_SHIPPING_THRESHOLD && opt.id === 'lagos-standard'
-                    return (
-                      <label
-                        key={opt.id}
-                        className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
-                          deliveryMethod === opt.id
-                            ? 'border-[#211713] bg-[#FCFAF6] ring-1 ring-[#211713]'
-                            : 'border-[#E9DED0] hover:border-[#C7A66A]'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="radio"
-                            name="delivery"
-                            checked={deliveryMethod === opt.id}
-                            onChange={() => setDeliveryMethod(opt.id)}
-                            className="accent-[#211713]"
-                          />
-                          <div>
-                            <p className="font-serif font-bold text-sm text-[#211713]">
-                              {opt.title}
-                            </p>
-                            <p className="text-[11px] text-[#7A726C]">{opt.time}</p>
-                          </div>
-                        </div>
-
-                        <div className="text-right">
-                          <span className="font-bold text-xs text-[#211713]">
-                            {isFree ? <strong className="text-green-700">FREE</strong> : formatPrice(opt.price)}
-                          </span>
-                        </div>
-                      </label>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* 4. Payment Method Selection */}
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-[#E9DED0] shadow-sm space-y-4">
-                <h3 className="font-serif text-lg font-bold text-[#211713] pb-3 border-b border-[#E9DED0]">
-                  4. Payment Method
-                </h3>
-
-                <div className="space-y-3 text-xs">
-                  {/* Option 1: Paystack */}
-                  <label
-                    className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      paymentMethod === 'paystack'
-                        ? 'border-[#211713] bg-[#FCFAF6] ring-1 ring-[#211713]'
-                        : 'border-[#E9DED0] hover:border-[#C7A66A]'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'paystack'}
-                      onChange={() => setPaymentMethod('paystack')}
-                      className="accent-[#211713] mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <strong className="text-sm font-serif text-[#211713]">
-                          Paystack Online Payment (Recommended)
-                        </strong>
-                        <div className="flex items-center gap-1 text-[10px] font-bold text-[#C7A66A]">
-                          <span>Cards</span> • <span>USSD</span> • <span>Bank Transfer</span>
-                        </div>
-                      </div>
-                      <p className="text-[#7A726C] mt-1 leading-relaxed">
-                        Instant, secure card payment, direct bank transfer, or USSD code powered by Paystack.
-                      </p>
-                    </div>
-                  </label>
-
-                  {/* Option 2: Direct Bank Transfer */}
-                  <label
-                    className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      paymentMethod === 'bank-transfer'
-                        ? 'border-[#211713] bg-[#FCFAF6] ring-1 ring-[#211713]'
-                        : 'border-[#E9DED0] hover:border-[#C7A66A]'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'bank-transfer'}
-                      onChange={() => setPaymentMethod('bank-transfer')}
-                      className="accent-[#211713] mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <strong className="text-sm font-serif text-[#211713] block">
-                        Direct Bank Transfer (Manual Confirmation)
-                      </strong>
-                      <p className="text-[#7A726C] mt-1 leading-relaxed">
-                        Transfer directly to Mama Fragrance's GTBank/Providus account upon placing the order.
-                      </p>
-                    </div>
-                  </label>
-
-                  {/* Option 3: Pay on Delivery (Lagos only) */}
-                  <label
-                    className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      paymentMethod === 'cod'
-                        ? 'border-[#211713] bg-[#FCFAF6] ring-1 ring-[#211713]'
-                        : 'border-[#E9DED0] hover:border-[#C7A66A]'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="payment"
-                      checked={paymentMethod === 'cod'}
-                      onChange={() => setPaymentMethod('cod')}
-                      className="accent-[#211713] mt-0.5"
-                    />
-                    <div className="flex-1">
-                      <strong className="text-sm font-serif text-[#211713] block">
-                        Pay on Delivery (Verified Lagos Addresses Only)
-                      </strong>
-                      <p className="text-[#7A726C] mt-1 leading-relaxed">
-                        Pay via POS card swipe or cash to the courier upon delivery in Lagos.
-                      </p>
-                    </div>
-                  </label>
                 </div>
               </div>
             </div>
 
-            {/* ── Right: Order Summary Sticky (4 cols) ── */}
-            <div className="lg:col-span-4">
-              <div className="bg-white p-7 rounded-2xl border border-[#E9DED0] shadow-luxury sticky top-28 space-y-6">
-                <h3 className="font-serif text-xl font-bold text-[#211713] pb-4 border-b border-[#E9DED0]">
-                  Order Summary
-                </h3>
-
-                {/* Items Mini List */}
-                <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
-                  {items.map((item) => (
-                    <div key={item.key} className="flex justify-between text-xs gap-2">
-                      <div className="truncate">
-                        <span className="font-medium text-[#211713]">{item.name}</span>
-                        <span className="text-[#7A726C] block text-[10px]">
-                          {item.volume} × {item.quantity}
-                        </span>
-                      </div>
-                      <span className="font-bold text-[#211713] whitespace-nowrap">
-                        {formatPrice(item.price * item.quantity)}
-                      </span>
+            {/* Delivery method */}
+            <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-5 sm:p-6 space-y-3">
+              <h2 className="font-serif font-bold text-base text-[#211713] flex items-center gap-2">
+                <Truck className="w-4 h-4 text-[#C7A66A]" />
+                Delivery Method
+              </h2>
+              <div className="space-y-2">
+                {deliveryOptions.map((opt) => (
+                  <label
+                    key={opt.id}
+                    className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                      delivery === opt.id
+                        ? 'border-[#C7A66A] bg-[#FAF6EF]'
+                        : 'border-[#E9DED0] bg-white hover:border-[#C7A66A]/50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value={opt.id}
+                      checked={delivery === opt.id}
+                      onChange={() => setDelivery(opt.id)}
+                      className="accent-[#C7A66A]"
+                    />
+                    <span className="text-xl">{opt.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-[#211713]">{opt.label}</p>
+                      <p className="text-xs text-[#7A726C]">{opt.desc}</p>
                     </div>
-                  ))}
-                </div>
-
-                {/* Totals */}
-                <div className="space-y-2.5 text-xs text-[#393431] pt-4 border-t border-[#E9DED0]">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span className="font-semibold text-[#211713]">{formatPrice(subtotal)}</span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-[#C7A66A] font-semibold">
-                      <span>Discount</span>
-                      <span>-{formatPrice(discount)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>Delivery ({activeDeliveryOption.title})</span>
-                    <span>
-                      {shipping === 0 ? (
-                        <strong className="text-green-700">FREE</strong>
-                      ) : (
-                        formatPrice(shipping)
-                      )}
+                    <span className="text-sm font-bold text-[#211713] shrink-0">
+                      {opt.price === 0 ? 'FREE' : `₦${opt.price.toLocaleString()}`}
                     </span>
-                  </div>
-                  <div className="flex justify-between text-base font-bold text-[#211713] pt-3 border-t border-[#E9DED0]">
-                    <span>Total Payable</span>
-                    <span>{formatPrice(total)}</span>
-                  </div>
-                </div>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full btn-espresso py-4 text-xs font-bold rounded shadow-lg flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    'Processing Order...'
-                  ) : (
-                    <>
-                      <span>Complete Order ({formatPrice(total)})</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
+            {/* Notes */}
+            <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-5 sm:p-6 space-y-3">
+              <h2 className="font-serif font-bold text-base text-[#211713] flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#C7A66A]" />
+                Order Notes <span className="text-xs font-normal text-[#7A726C]">(optional)</span>
+              </h2>
+              <textarea
+                name="notes"
+                value={form.notes}
+                onChange={handleChange}
+                rows={3}
+                className={`${inputClass} resize-none`}
+                placeholder="Any special instructions, gift message, or fragrance preferences..."
+              />
+            </div>
 
-                <div className="flex items-center justify-center gap-2 text-[10px] text-[#7A726C]">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#C7A66A]" />
-                  <span>Guaranteed Original &amp; Sealed Scents</span>
+            <button
+              type="submit"
+              className="w-full btn-espresso py-4 text-sm font-bold rounded flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              PREVIEW MY INVOICE
+            </button>
+          </form>
+        </div>
+
+        {/* Right — Order summary */}
+        <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-4">
+          <div className="bg-white border border-[#E9DED0] rounded-2xl shadow-sm p-5 sm:p-6">
+            <h2 className="font-serif font-bold text-base text-[#211713] mb-4 flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-[#C7A66A]" />
+              Order Summary
+            </h2>
+
+            <div className="space-y-3 pb-4 border-b border-[#E9DED0]">
+              {items.map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#E9DED0] bg-[#FAF6EF] shrink-0">
+                    {item.image && <img src={item.image} alt={item.name} className="w-full h-full object-cover" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-[#211713] truncate">{item.name}</p>
+                    {item.volume && <p className="text-[10px] text-[#7A726C]">{item.volume}</p>}
+                    <p className="text-[10px] text-[#7A726C]">Qty: {item.quantity}</p>
+                  </div>
+                  <p className="text-xs font-bold text-[#211713] shrink-0">₦{(item.price * item.quantity).toLocaleString()}</p>
                 </div>
+              ))}
+            </div>
+
+            <div className="pt-3 space-y-2 text-sm">
+              <div className="flex justify-between text-[#7A726C]">
+                <span>Subtotal</span>
+                <span>₦{subtotal.toLocaleString()}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>−₦{discount.toLocaleString()}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-[#7A726C]">
+                <span>Delivery</span>
+                <span>{shipping === 0 ? 'FREE' : `₦${shipping.toLocaleString()}`}</span>
+              </div>
+              <div className="flex justify-between font-bold text-[#211713] pt-2 border-t border-[#E9DED0]">
+                <span className="font-serif">Total</span>
+                <span>₦{total.toLocaleString()}</span>
               </div>
             </div>
           </div>
-        </form>
-      </div>
 
-      {/* ── Interactive Paystack Simulation / Gateway Modal ── */}
-      {showPaystackModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#211713]/75 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full border border-[#E9DED0] overflow-hidden">
-            {/* Paystack Header */}
-            <div className="bg-[#0BA4DB] text-white p-5 text-center relative">
-              <span className="text-[10px] uppercase font-bold tracking-widest block opacity-90">
-                PAYSTACK SECURE CHECKOUT
-              </span>
-              <h3 className="font-sans font-bold text-xl mt-1">
-                {formatPrice(total)}
-              </h3>
-              <p className="text-xs opacity-90 mt-0.5">
-                Mama Fragrance (Nigeria)
+          {/* WhatsApp info card */}
+          <div className="bg-[#25D366]/5 border border-[#25D366]/20 rounded-2xl p-5 flex items-start gap-3">
+            <MessageCircle className="w-5 h-5 text-[#25D366] shrink-0 mt-0.5" />
+            <div className="text-xs text-[#393431] space-y-1">
+              <p className="font-bold text-sm text-[#211713]">Pay via WhatsApp</p>
+              <p className="leading-relaxed">
+                After reviewing your invoice, you'll send it directly to us on WhatsApp. We'll confirm and share payment details — bank transfer accepted.
               </p>
-              <button
-                onClick={() => setShowPaystackModal(false)}
-                className="absolute top-4 right-4 text-white/80 hover:text-white text-sm"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4 text-xs">
-              <div className="p-3.5 rounded-lg bg-[#FAF6EF] border border-[#E9DED0] text-[#393431]">
-                <p><strong>Paying as:</strong> {form.email}</p>
-                <p><strong>Recipient:</strong> {form.firstName} {form.lastName}</p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="font-bold text-[#211713] block">Test Card Number</label>
-                <input
-                  readOnly
-                  value="4084 0840 8408 4084 (Test Visa)"
-                  className="w-full bg-[#FAF6EF] border border-[#E9DED0] rounded p-2.5 text-xs text-[#211713] font-mono"
-                />
-              </div>
-
-              <button
-                onClick={() => handleProcessOrder(true)}
-                disabled={loading}
-                className="w-full py-3.5 bg-[#0BA4DB] hover:bg-[#098bb9] text-white font-bold text-xs rounded-lg shadow-md transition-colors"
-              >
-                {loading ? 'Verifying Transaction...' : `Simulate Successful Payment of ${formatPrice(total)}`}
-              </button>
+              <p className="font-semibold text-[#211713] pt-1">📱 {WHATSAPP_DISPLAY}</p>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

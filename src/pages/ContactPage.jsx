@@ -105,7 +105,7 @@ export default function ContactPage() {
             </p>
 
             <a
-              href="https://wa.me/2348120000000"
+              href="https://wa.me/2347064160841"
               target="_blank"
               rel="noreferrer"
               className="flex items-start gap-4 p-5 bg-white border border-[#E9DED0] rounded-xl hover:border-[#C7A66A] hover:shadow-luxury transition-all group"
@@ -116,7 +116,7 @@ export default function ContactPage() {
               <div>
                 <p className="text-sm font-bold text-[#211713] group-hover:text-[#C7A66A] transition-colors">WhatsApp</p>
                 <p className="text-xs text-[#7A726C] mt-0.5">Chat with us directly — fast responses</p>
-                <p className="text-xs text-[#C7A66A] font-semibold mt-1">+234 812 000 0000</p>
+                <p className="text-xs text-[#C7A66A] font-semibold mt-1">+234 706 416 0841</p>
               </div>
             </a>
 
@@ -162,7 +162,7 @@ export default function ContactPage() {
                       Thank you for reaching out, {form.name.split(' ')[0]}. We'll get back to you within 24 hours. For faster help, send us a WhatsApp message.
                     </p>
                     <a
-                      href="https://wa.me/2348120000000"
+                      href="https://wa.me/2347064160841"
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 btn-espresso px-8 py-3 text-xs font-bold rounded"

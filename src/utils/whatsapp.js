@@ -1,5 +1,5 @@
-// Replace with the actual WhatsApp business number (include country code, no + or spaces)
-export const WHATSAPP_NUMBER = '2348000000000'
+// Mama Fragrance WhatsApp Business Number (with country code, no + or spaces)
+export const WHATSAPP_NUMBER = '2347064160841'
 
 /**
  * Build a WhatsApp link with a pre-filled message
@@ -14,15 +14,55 @@ export const buildWhatsAppLink = (message) => {
  */
 export const whatsAppChatLink = () =>
   buildWhatsAppLink(
-    'Hello Mama Fragrance! 🌸 I visited your website and I want to order some perfumes. "Smell as good as you look!" ✨'
+    'Hello Mama Fragrance! 🌸 I visited your website and I would like to enquire about your fragrances. "Smell as good as you look!" ✨'
   )
 
 /**
- * Cart order link — formats the cart as a WhatsApp message
+ * Full invoice link — formats the complete order as a structured WhatsApp invoice message.
+ * This is what customers send after checkout to complete their order and arrange payment.
+ */
+export const whatsAppInvoiceLink = ({ orderNumber, customerName, phone, address, city, state, items, subtotal, shipping, discount, total, deliveryMethod }) => {
+  const itemLines = items.map(
+    (item, i) =>
+      `${i + 1}. *${item.name}*${item.volume ? ` (${item.volume})` : ''} × ${item.quantity} = ₦${(item.price * item.quantity).toLocaleString()}`
+  )
+
+  const lines = [
+    `🧾 *ORDER INVOICE — MAMA FRAGRANCE*`,
+    `_"Smell as good as you look."_ ✨`,
+    ``,
+    `📋 *Order Reference:* ${orderNumber}`,
+    `👤 *Customer Name:* ${customerName}`,
+    `📞 *Phone:* ${phone}`,
+    `📍 *Delivery Address:*`,
+    `   ${address}`,
+    `   ${city}${state ? `, ${state}` : ''}`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `🛍️ *Items Ordered:*`,
+    ...itemLines,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `📦 *Delivery Method:* ${deliveryMethod || 'Standard Delivery'}`,
+    discount > 0 ? `🏷️ *Discount:* -₦${discount.toLocaleString()}` : null,
+    `🚚 *Shipping:* ${shipping === 0 ? 'FREE' : `₦${shipping.toLocaleString()}`}`,
+    ``,
+    `💰 *TOTAL AMOUNT DUE: ₦${total.toLocaleString()}*`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Please confirm my order and send payment details. Thank you! 🙏👑`,
+  ]
+    .filter((l) => l !== null)
+    .join('\n')
+
+  return buildWhatsAppLink(lines)
+}
+
+/**
+ * Simple cart order link (used from CartDrawer)
  */
 export const whatsAppOrderLink = (cartItems, total) => {
   const lines = cartItems.map(
-    (item) => `• ${item.name} (${item.volume}) × ${item.quantity}`
+    (item) => `• ${item.name}${item.volume ? ` (${item.volume})` : ''} × ${item.quantity}`
   )
 
   const message = [
@@ -34,7 +74,7 @@ export const whatsAppOrderLink = (cartItems, total) => {
     '',
     `*Total: ₦${total.toLocaleString()}*`,
     '',
-    'Please confirm stock availability and send payment / delivery details. Thank you! 👑✨',
+    'Please confirm stock availability and send payment details. Thank you! 👑✨',
   ].join('\n')
 
   return buildWhatsAppLink(message)
@@ -45,5 +85,5 @@ export const whatsAppOrderLink = (cartItems, total) => {
  */
 export const whatsAppProductEnquiry = (productName) =>
   buildWhatsAppLink(
-    `Hello Mama Fragrance! 🌸 I am interested in *${productName}*. Please let me know if it is currently in stock! ✨`
+    `Hello Mama Fragrance! 🌸 I am interested in *${productName}*. Is it currently in stock? ✨`
   )
