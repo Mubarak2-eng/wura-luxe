@@ -135,10 +135,10 @@ export default function CheckoutPage() {
     )
   }
 
-  const selectedDelivery = deliveryOptions.find((d) => d.id === delivery)
-  const subtotal = getCartSubtotal(items)
-  const discount = getCartDiscount(items, promoDiscount)
-  const shipping = delivery === 'pickup' ? 0 : (selectedDelivery?.price ?? 0)
+  const selectedDelivery = deliveryOptions.find((d) => d.id === delivery) || deliveryOptions[0]
+  const subtotal = Number(getCartSubtotal(items)) || 0
+  const discount = Number(getCartDiscount(items, promoDiscount)) || 0
+  const shipping = delivery === 'pickup' ? 0 : (Number(selectedDelivery?.price) || 0)
   const total = Math.max(0, subtotal - discount + shipping)
 
   const handleSubmit = (e) => {
