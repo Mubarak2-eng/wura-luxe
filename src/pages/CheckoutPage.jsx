@@ -101,10 +101,11 @@ const inputClass =
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
-  const { items, appliedPromo, clearCart } = useCartStore()
+  const { items, promoCode, promoDiscount, clearCart } = useCartStore()
   const { user } = useAuthStore()
   const addOrder = useAuthStore((s) => s.addOrder)
 
+  const [orderNumber] = useState(() => generateOrderNumber())
   const [step, setStep] = useState(1) // 1 = details, 2 = preview invoice, 3 = done
   const [delivery, setDelivery] = useState('standard')
   const [form, setForm] = useState({
@@ -136,11 +137,9 @@ export default function CheckoutPage() {
 
   const selectedDelivery = deliveryOptions.find((d) => d.id === delivery)
   const subtotal = getCartSubtotal(items)
-  const discount = getCartDiscount(items, appliedPromo)
+  const discount = getCartDiscount(items, promoDiscount)
   const shipping = delivery === 'pickup' ? 0 : (selectedDelivery?.price ?? 0)
-  const total = subtotal - discount + shipping
-
-  const orderNumber = generateOrderNumber()
+  const total = Math.max(0, subtotal - discount + shipping)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -344,7 +343,7 @@ export default function CheckoutPage() {
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span>Discount ({appliedPromo})</span>
+                    <span>Discount ({promoCode})</span>
                     <span>−₦{discount.toLocaleString()}</span>
                   </div>
                 )}

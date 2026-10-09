@@ -98,8 +98,8 @@ export const useCartStore = create(
 export const getCartSubtotal = (items) =>
   items.reduce((acc, i) => acc + i.price * i.quantity, 0)
 
-export const getCartDiscount = (items, promoDiscount) =>
-  Math.round(getCartSubtotal(items) * promoDiscount)
+export const getCartDiscount = (items, promoDiscount = 0) =>
+  Math.round(getCartSubtotal(items) * (Number(promoDiscount) || 0))
 
 export const getCartShipping = (items, baseShippingCost = 3000) => {
   const sub = getCartSubtotal(items)
