@@ -219,7 +219,7 @@ export default function AboutPage() {
               Contact Us
             </Link>
             <a
-              href="https://wa.me/2348120000000"
+              href="https://wa.me/2347064160841"
               target="_blank"
               rel="noreferrer"
               className="btn-outline-gold px-6 py-3 text-xs font-bold rounded flex items-center gap-2"
